@@ -97,3 +97,14 @@ export const SIZE_CLASSES: Record<WidgetSize, string> = {
   tall: "col-span-1 row-span-2",
   lg: "col-span-2 row-span-2",
 };
+
+/** Sizes that make sense per widget type (Bento offers a contextual set). */
+export const SIZE_OPTIONS: Record<WidgetType, WidgetSize[]> = {
+  link: ["sm", "wide", "lg"],
+  social: ["sm", "wide"],
+  image: ["sm", "wide", "tall", "lg"],
+  text: ["wide", "tall", "lg"],
+  map: ["sm", "wide", "lg"],
+  section: [],
+};
+

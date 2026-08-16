@@ -49,8 +49,11 @@ export function ProfilePage() {
           className={`bento-theme-${state.theme} glass-panel rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
         >
           <DialogHeader>
-            <DialogTitle>Edit widget</DialogTitle>
-            <DialogDescription>Changes save automatically.</DialogDescription>
+            <DialogTitle>Edit details</DialogTitle>
+            <DialogDescription>
+              Text is editable directly on the tile. Changes save automatically.
+            </DialogDescription>
+
           </DialogHeader>
           {live && <WidgetEditForm widget={live} />}
         </DialogContent>
