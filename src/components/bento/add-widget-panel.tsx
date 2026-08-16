@@ -13,8 +13,8 @@ import { toast } from "sonner";
 import { useProfileStore } from "@/components/bento/profile-store";
 import { PLATFORM_META } from "@/components/bento/social-icons";
 import { Input } from "@/components/ui/input";
-import { AVATAR_PRESETS } from "@/data/shakespeare";
 import type { SocialPlatform, Widget } from "@/lib/bento-types";
+import { createWidget, newWidgetId, widgetFromUrl, type QuickWidgetType } from "@/lib/create-widget";
 
 const WIDGETS = [
   { id: "link", label: "Link", hint: "Any page on the web", Icon: Link2 },
@@ -23,17 +23,6 @@ const WIDGETS = [
   { id: "map", label: "Map", hint: "Show where you are", Icon: MapPin },
   { id: "section", label: "Section", hint: "A title to group tiles", Icon: Type },
 ] as const;
-
-const PLATFORM_HOSTS: { match: RegExp; platform: SocialPlatform }[] = [
-  { match: /(^|\.)(x|twitter)\.com$/, platform: "x" },
-  { match: /(^|\.)github\.com$/, platform: "github" },
-  { match: /(^|\.)instagram\.com$/, platform: "instagram" },
-  { match: /(^|\.)(youtube\.com|youtu\.be)$/, platform: "youtube" },
-  { match: /(^|\.)(open\.)?spotify\.com$/, platform: "spotify" },
-  { match: /(^|\.)substack\.com$/, platform: "substack" },
-];
-
-const newId = () => `w-${Math.random().toString(36).slice(2, 9)}`;
 
 export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
   const { dispatch, setSelectedId } = useProfileStore();
@@ -50,11 +39,8 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
   function submitUrl() {
     const value = url.trim();
     if (!value || busy) return;
-    const normalized = /^https?:\/\//.test(value) ? value : `https://${value}`;
-    let host: string;
-    try {
-      host = new URL(normalized).hostname.replace(/^www\./, "");
-    } catch {
+    const result = widgetFromUrl(value);
+    if (!result) {
       toast.error("That doesn't look like a valid link");
       return;
     }
@@ -63,35 +49,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
     // Small delay so the flow reads like Bento's "fetching preview" step.
     window.setTimeout(() => {
       setBusy(false);
-      const social = PLATFORM_HOSTS.find((p) => p.match.test(host));
-      if (social) {
-        const meta = PLATFORM_META[social.platform];
-        const handle = new URL(normalized).pathname.replace(/^\/+|\/+$/g, "").split("/")[0];
-        add(
-          {
-            id: newId(),
-            type: "social",
-            size: "sm",
-            platform: social.platform,
-            handle: handle ? `@${handle}` : meta.label,
-            url: normalized,
-          },
-          `${meta.label} added to your bento`,
-        );
-      } else {
-        const name = host.split(".")[0] ?? host;
-        add(
-          {
-            id: newId(),
-            type: "link",
-            size: "wide",
-            title: name.charAt(0).toUpperCase() + name.slice(1),
-            url: normalized,
-            description: host,
-          },
-          "Link added to your bento",
-        );
-      }
+      add(result.widget, result.message);
       setUrl("");
     }, 420);
   }
@@ -100,7 +58,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
     const meta = PLATFORM_META[platform];
     add(
       {
-        id: newId(),
+        id: newWidgetId(),
         type: "social",
         size: "sm",
         platform,
@@ -111,29 +69,11 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
     );
   }
 
-  function addWidget(type: (typeof WIDGETS)[number]["id"]) {
-    switch (type) {
-      case "link":
-        return add(
-          { id: newId(), type: "link", size: "wide", title: "New link", url: "https://example.com", description: "Add a description" },
-          "Link tile added",
-        );
-      case "image":
-        return add(
-          { id: newId(), type: "image", size: "lg", src: AVATAR_PRESETS[1]!, alt: "New image", caption: "" },
-          "Image tile added",
-        );
-      case "text":
-        return add(
-          { id: newId(), type: "text", size: "wide", body: "All the world's a stage.", attribution: "As You Like It" },
-          "Note added",
-        );
-      case "map":
-        return add({ id: newId(), type: "map", size: "sm", src: AVATAR_PRESETS[3]!, place: "London" }, "Map tile added");
-      case "section":
-        return add({ id: newId(), type: "section", size: "wide", title: "New section" }, "Section added");
-    }
+  function addWidget(type: QuickWidgetType) {
+    const { widget, message } = createWidget(type);
+    add(widget, message);
   }
+
 
   return (
     <div className="space-y-6">
