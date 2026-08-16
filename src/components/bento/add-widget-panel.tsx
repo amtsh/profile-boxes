@@ -41,11 +41,6 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const t = window.setTimeout(() => inputRef.current?.focus(), 80);
-    return () => window.clearTimeout(t);
-  }, []);
-
   function add(widget: Widget, message: string) {
     dispatch({ type: "add", widget });
     setSelectedId(widget.id);
