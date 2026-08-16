@@ -81,9 +81,10 @@ export function TileControls({
           <DropdownMenuItem onSelect={onEdit}>
             <Pencil className="size-4" /> Edit details
           </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onSelect={onDelete}>
+          <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive">
             <Trash2 className="size-4" /> Delete
           </DropdownMenuItem>
+
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
