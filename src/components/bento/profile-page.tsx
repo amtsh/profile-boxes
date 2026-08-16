@@ -45,7 +45,9 @@ export function ProfilePage() {
       <EditorToolbar />
 
       <Dialog open={!!live} onOpenChange={(o) => !o && setEditWidget(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          className={`bento-theme-${state.theme} glass-panel rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
+        >
           <DialogHeader>
             <DialogTitle>Edit widget</DialogTitle>
             <DialogDescription>Changes save automatically.</DialogDescription>
