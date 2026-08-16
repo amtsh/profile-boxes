@@ -76,7 +76,7 @@ function SortableTile({
       <div
         className={`group/tile h-full ${editing ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""} ${
           selected
-            ? "rounded-[1.5rem] ring-2 ring-foreground ring-offset-2 ring-offset-background"
+            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
             : ""
         }`}
         {...(editing ? { ...attributes, ...listeners } : {})}
