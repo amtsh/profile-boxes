@@ -58,6 +58,8 @@ function reducer(state: ProfileState, action: Action): ProfileState {
   }
 }
 
+export type PreviewDevice = "desktop" | "mobile";
+
 interface StoreValue {
   state: ProfileState;
   dispatch: React.Dispatch<Action>;
@@ -66,6 +68,8 @@ interface StoreValue {
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
   hydrated: boolean;
+  preview: PreviewDevice;
+  setPreview: (v: PreviewDevice) => void;
 }
 
 const ProfileContext = createContext<StoreValue | null>(null);
@@ -105,9 +109,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     if (!v) setSelectedId(null);
   }, []);
 
+  const [preview, setPreview] = useState<PreviewDevice>("desktop");
+
   const value = useMemo(
-    () => ({ state, dispatch, editing, setEditing, selectedId, setSelectedId, hydrated }),
-    [state, editing, setEditing, selectedId, hydrated],
+    () => ({ state, dispatch, editing, setEditing, selectedId, setSelectedId, hydrated, preview, setPreview }),
+    [state, editing, setEditing, selectedId, hydrated, preview],
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

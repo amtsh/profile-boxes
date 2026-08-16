@@ -1,4 +1,4 @@
-import { Check, Plus, Pencil, RotateCcw } from "lucide-react";
+import { Check, Monitor, Plus, Pencil, RotateCcw, Smartphone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -29,7 +29,7 @@ const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
 ];
 
 export function EditorToolbar() {
-  const { state, dispatch, editing, setEditing } = useProfileStore();
+  const { state, dispatch, editing, setEditing, preview, setPreview } = useProfileStore();
   const [addOpen, setAddOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -38,27 +38,44 @@ export function EditorToolbar() {
   return (
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4">
-        <div className="pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full bg-foreground/95 p-1.5 text-background shadow-xl backdrop-blur no-scrollbar">
+        <div className="pointer-events-auto flex max-w-[calc(100vw-6rem)] items-center gap-1 overflow-x-auto rounded-full bg-card p-1.5 shadow-xl ring-1 ring-border backdrop-blur no-scrollbar">
           <button
             type="button"
             onClick={() => setEditing(!editing)}
-            className="flex items-center gap-1.5 rounded-full bg-background/15 px-4 py-2 text-sm font-medium whitespace-nowrap transition hover:bg-background/25"
+            className="flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold whitespace-nowrap text-background transition hover:opacity-90"
           >
             {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
             {editing ? "Done" : "Edit"}
           </button>
 
+          <span className="mx-1 h-6 w-px shrink-0 bg-border" />
+
+          <div className="flex shrink-0 items-center gap-1">
+            {(
+              [
+                { id: "desktop", label: "Desktop", Icon: Monitor },
+                { id: "mobile", label: "Mobile", Icon: Smartphone },
+              ] as const
+            ).map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setPreview(id)}
+                aria-pressed={preview === id}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
+                  preview === id
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Icon className="size-4" /> {label}
+              </button>
+            ))}
+          </div>
+
           {editing && (
             <>
-              <button
-                type="button"
-                onClick={() => setAddOpen(true)}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition hover:bg-background/15"
-              >
-                <Plus className="size-4" /> Add
-              </button>
-
-              <span className="mx-1 h-6 w-px shrink-0 bg-background/25" />
+              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
 
               <div className="flex shrink-0 items-center gap-1 px-1">
                 {THEMES.map((t) => (
@@ -69,13 +86,13 @@ export function EditorToolbar() {
                     aria-label={`${t.label} theme`}
                     onClick={() => dispatch({ type: "theme", theme: t.id })}
                     className={`size-6 rounded-full border transition ${t.swatch} ${
-                      state.theme === t.id ? "ring-2 ring-background ring-offset-1 ring-offset-foreground" : ""
+                      state.theme === t.id ? "ring-2 ring-foreground ring-offset-1 ring-offset-card" : ""
                     }`}
                   />
                 ))}
               </div>
 
-              <span className="mx-1 h-6 w-px shrink-0 bg-background/25" />
+              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
 
               <button
                 type="button"
@@ -83,7 +100,7 @@ export function EditorToolbar() {
                   dispatch({ type: "reset" });
                   toast.success("Reset to the Shakespeare demo");
                 }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition hover:bg-background/15"
+                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-muted"
               >
                 <RotateCcw className="size-4" /> Reset
               </button>
@@ -91,6 +108,19 @@ export function EditorToolbar() {
           )}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setEditing(true);
+          setAddOpen(true);
+        }}
+        aria-label="Add to Bento"
+        className="fixed right-5 bottom-5 z-50 flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
+      >
+        <Plus className="size-6" />
+      </button>
+
 
       {isMobile ? (
         <Drawer open={addOpen} onOpenChange={setAddOpen}>
