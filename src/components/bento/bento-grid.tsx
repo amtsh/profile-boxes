@@ -50,7 +50,7 @@ function SortableTile({ widget, onEdit }: { widget: Widget; onEdit: (w: Widget) 
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`relative ${SIZE_CLASSES[widget.size]} ${isDragging ? "z-40 opacity-30" : ""}`}
+      className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${isDragging ? "z-40 opacity-30" : ""}`}
       onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
       <div
