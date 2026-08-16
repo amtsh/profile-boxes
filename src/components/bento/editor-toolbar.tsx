@@ -35,11 +35,15 @@ export function EditorToolbar() {
 
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
+  const showPill = !isMobile || editing;
+
   return (
     <>
+      {showPill && (
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
         <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
           {!isMobile && (
+
             <div className="flex shrink-0 items-center gap-1">
               {(
                 [
