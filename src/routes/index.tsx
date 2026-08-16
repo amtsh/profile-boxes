@@ -42,14 +42,19 @@ function Index() {
 }
 
 function ProfilePage() {
-  const { state, editing, setSelectedId } = useProfileStore();
+  const { state, editing, setSelectedId, preview } = useProfileStore();
   const [editWidget, setEditWidget] = useState<Widget | null>(null);
   const live = editWidget ? (state.widgets.find((w) => w.id === editWidget.id) ?? null) : null;
+  const mobilePreview = preview === "mobile";
 
   return (
     <div className={`bento-theme-${state.theme} min-h-screen bg-background text-foreground`}>
       <main
-        className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 pb-32 lg:flex-row lg:gap-14 lg:px-8 lg:py-16"
+        className={
+          mobilePreview
+            ? "mx-auto flex w-full max-w-[430px] flex-col gap-8 px-5 py-10 pb-32"
+            : "mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 pb-32 lg:flex-row lg:gap-14 lg:px-8 lg:py-16"
+        }
         onClick={() => editing && setSelectedId(null)}
       >
         <ProfileRail />
@@ -57,6 +62,7 @@ function ProfilePage() {
           <BentoGrid onEdit={setEditWidget} />
         </div>
       </main>
+
 
       <p className="fixed bottom-5 left-5 hidden text-xs font-medium text-muted-foreground lg:block">
         Made with Bento
