@@ -111,7 +111,7 @@ function SortableTile({
         <div
           className={
             compact
-              ? "glass-panel fixed inset-x-0 bottom-28 z-50 mx-auto flex w-fit items-center gap-1 rounded-full p-1.5 text-foreground"
+              ? "glass-panel fixed inset-x-0 bottom-40 z-50 mx-auto flex w-fit items-center gap-1 rounded-full p-1.5 text-foreground"
               : "glass-panel absolute -bottom-3 left-1/2 z-50 flex -translate-x-1/2 translate-y-full items-center gap-1 rounded-full p-1.5 text-foreground"
           }
           onClick={(e) => e.stopPropagation()}
