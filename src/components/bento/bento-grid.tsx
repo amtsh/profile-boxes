@@ -207,7 +207,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition hover:opacity-90"
+          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition hover:brightness-105"
         >
           <Plus className="size-4" /> Add your first widget
         </button>
