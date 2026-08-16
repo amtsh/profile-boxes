@@ -124,7 +124,9 @@ export function EditorToolbar() {
 
       {isMobile ? (
         <Drawer open={addOpen} onOpenChange={setAddOpen}>
-          <DrawerContent>
+          <DrawerContent
+            className={`bento-theme-${state.theme} glass-panel border-0 bg-background/80 text-foreground`}
+          >
             <DrawerHeader className="text-left">
               <DrawerTitle>Add to Bento</DrawerTitle>
               <DrawerDescription>Drop in a link, a social, or a widget.</DrawerDescription>
@@ -134,7 +136,9 @@ export function EditorToolbar() {
         </Drawer>
       ) : (
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+          <DialogContent
+            className={`bento-theme-${state.theme} glass-panel max-h-[85vh] overflow-y-auto rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
+          >
             <DialogHeader>
               <DialogTitle>Add to Bento</DialogTitle>
               <DialogDescription>Drop in a link, a social, or a widget.</DialogDescription>
