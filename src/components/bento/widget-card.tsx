@@ -1,5 +1,7 @@
 import { ArrowUpRight, MapPin, Quote } from "lucide-react";
 
+import { InlineText } from "@/components/bento/inline-text";
+import { useProfileStore } from "@/components/bento/profile-store";
 import { PLATFORM_META } from "@/components/bento/social-icons";
 import type { Widget } from "@/lib/bento-types";
 
@@ -21,12 +23,22 @@ function hostFor(url: string) {
 }
 
 export function WidgetCard({ widget, editing }: { widget: Widget; editing: boolean }) {
+  const { dispatch } = useProfileStore();
+  const patch = (p: Partial<Widget>) =>
+    dispatch({ type: "update", id: widget.id, patch: p as Partial<Widget> });
+
   switch (widget.type) {
     case "section":
       return (
         <div className="flex h-full items-end px-1 pb-2">
           <h2 className="font-display text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-            {widget.title}
+            <InlineText
+              editing={editing}
+              value={widget.title}
+              placeholder="Section title"
+              ariaLabel="Section title"
+              onCommit={(title) => patch({ title } as Partial<Widget>)}
+            />
           </h2>
         </div>
       );
@@ -41,7 +53,15 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm font-semibold">{meta.label}</p>
-            <p className="truncate text-xs text-muted-foreground">{widget.handle}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              <InlineText
+                editing={editing}
+                value={widget.handle}
+                placeholder="@handle"
+                ariaLabel="Handle"
+                onCommit={(handle) => patch({ handle } as Partial<Widget>)}
+              />
+            </p>
           </div>
           {!isSmall && (
             <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium">
@@ -72,9 +92,25 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             <ArrowUpRight className="size-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-display text-sm font-semibold">{widget.title}</p>
-            {widget.description && (
-              <p className="line-clamp-2 text-xs text-muted-foreground">{widget.description}</p>
+            <p className="truncate font-display text-sm font-semibold">
+              <InlineText
+                editing={editing}
+                value={widget.title}
+                placeholder="Title"
+                ariaLabel="Link title"
+                onCommit={(title) => patch({ title } as Partial<Widget>)}
+              />
+            </p>
+            {(editing || widget.description) && (
+              <p className="line-clamp-2 text-xs text-muted-foreground">
+                <InlineText
+                  editing={editing}
+                  value={widget.description ?? ""}
+                  placeholder="Add a description"
+                  ariaLabel="Link description"
+                  onCommit={(description) => patch({ description } as Partial<Widget>)}
+                />
+              </p>
             )}
             <p className="mt-1 truncate text-[11px] text-muted-foreground/70">
               {hostFor(widget.url)}
@@ -93,10 +129,20 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             loading="lazy"
             className={`size-full object-cover transition-transform duration-500 ${editing ? "" : "group-hover:scale-[1.04]"}`}
           />
-          {widget.caption && (
-            <div className="glass-chip pointer-events-none absolute inset-x-3 bottom-3 flex items-center rounded-full px-3 py-1.5">
+          {(editing || widget.caption) && (
+            <div
+              className={`glass-chip absolute inset-x-3 bottom-3 flex items-center rounded-full px-3 py-1.5 ${
+                editing ? "" : "pointer-events-none"
+              }`}
+            >
               <p className="truncate font-display text-xs font-medium text-card-foreground">
-                {widget.caption}
+                <InlineText
+                  editing={editing}
+                  value={widget.caption ?? ""}
+                  placeholder="Add a caption"
+                  ariaLabel="Image caption"
+                  onCommit={(caption) => patch({ caption } as Partial<Widget>)}
+                />
               </p>
             </div>
           )}
@@ -108,10 +154,25 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
         <div className="tile-surface tile-hover flex h-full flex-col justify-between gap-3 overflow-hidden p-5">
           <Quote className="size-5 shrink-0 text-muted-foreground/50" />
           <p className="font-display text-base leading-snug font-medium text-balance">
-            {widget.body}
+            <InlineText
+              editing={editing}
+              value={widget.body}
+              multiline
+              placeholder="Write a note"
+              ariaLabel="Note"
+              onCommit={(body) => patch({ body } as Partial<Widget>)}
+            />
           </p>
-          {widget.attribution && (
-            <p className="text-xs text-muted-foreground">{widget.attribution}</p>
+          {(editing || widget.attribution) && (
+            <p className="text-xs text-muted-foreground">
+              <InlineText
+                editing={editing}
+                value={widget.attribution ?? ""}
+                placeholder="Attribution"
+                ariaLabel="Attribution"
+                onCommit={(attribution) => patch({ attribution } as Partial<Widget>)}
+              />
+            </p>
           )}
         </div>
       );
@@ -127,7 +188,15 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
           />
           <div className="glass-chip absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-full px-3 py-1.5">
             <MapPin className="size-3.5 shrink-0" />
-            <span className="truncate text-xs font-medium">{widget.place}</span>
+            <span className="truncate text-xs font-medium">
+              <InlineText
+                editing={editing}
+                value={widget.place}
+                placeholder="Place"
+                ariaLabel="Place"
+                onCommit={(place) => patch({ place } as Partial<Widget>)}
+              />
+            </span>
           </div>
         </div>
       );

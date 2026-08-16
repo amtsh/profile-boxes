@@ -19,37 +19,29 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Plus } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
+import { TileControls } from "@/components/bento/tile-controls";
 import { WidgetCard } from "@/components/bento/widget-card";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SIZE_CLASSES, SIZE_LABELS, type Widget, type WidgetSize } from "@/lib/bento-types";
-
-const SIZE_ORDER: WidgetSize[] = ["sm", "wide", "tall", "lg"];
-
-function SizeGlyph({ size }: { size: WidgetSize }) {
-  const box: Record<WidgetSize, string> = {
-    sm: "w-2.5 h-2.5",
-    wide: "w-5 h-2.5",
-    tall: "w-2.5 h-5",
-    lg: "w-5 h-5",
-  };
-  return <span className={`block rounded-[3px] bg-current ${box[size]}`} />;
-}
+import { SIZE_CLASSES, type Widget, type WidgetSize } from "@/lib/bento-types";
 
 function SortableTile({
   widget,
   index,
   compact,
+  animate,
   onEdit,
   onDelete,
 }: {
   widget: Widget;
   index: number;
   compact: boolean;
+  animate: boolean;
   onEdit: (w: Widget) => void;
   onDelete: (w: Widget) => void;
 }) {
@@ -58,11 +50,19 @@ function SortableTile({
     id: widget.id,
     disabled: !editing,
   });
+  const [hovered, setHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Desktop reveals controls on hover; touch keeps tap-to-select.
   const selected = editing && selectedId === widget.id;
+  const showControls = editing && (compact ? selected : hovered || menuOpen);
+  const dragProps = editing ? { ...attributes, ...listeners } : {};
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
+      layout={animate}
+      transition={{ type: "spring", stiffness: 420, damping: 38, mass: 0.9 }}
       style={{
         transform: CSS.Translate.toString(transform),
         transition,
@@ -71,15 +71,19 @@ function SortableTile({
       className={`tile-enter relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
         isDragging ? "z-40 scale-[1.04] opacity-40" : ""
       }`}
-      onClick={() => editing && setSelectedId(selected ? null : widget.id)}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onClick={() => editing && compact && setSelectedId(selected ? null : widget.id)}
     >
       <div
-        className={`group/tile h-full ${editing ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""} ${
-          selected
+        className={`group/tile h-full ${
+          editing && compact ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
+        } ${
+          selected && compact
             ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
             : ""
         }`}
-        {...(editing ? { ...attributes, ...listeners } : {})}
+        {...(compact ? dragProps : {})}
       >
         {widget.type === "link" || widget.type === "social" ? (
           editing ? (
@@ -101,58 +105,38 @@ function SortableTile({
         )}
       </div>
 
-      {editing && !selected && (
+      {editing && !compact && (
+        <button
+          type="button"
+          aria-label="Drag to reorder"
+          {...dragProps}
+          className={`absolute top-2 left-2 z-40 flex size-7 cursor-grab touch-none items-center justify-center rounded-full bg-foreground/60 text-background transition duration-200 active:cursor-grabbing ${
+            hovered || menuOpen ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <GripVertical className="size-3.5" />
+        </button>
+      )}
+
+      {editing && compact && !selected && (
         <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/55 p-1 text-background opacity-70 transition">
           <GripVertical className="size-3" />
         </span>
       )}
 
-      {selected && (
-        <div
-          className={
-            compact
-              ? "glass-panel fixed inset-x-0 bottom-40 z-50 mx-auto flex w-fit items-center gap-1 rounded-full p-1.5 text-foreground"
-              : "glass-panel absolute -bottom-3 left-1/2 z-50 flex -translate-x-1/2 translate-y-full items-center gap-1 rounded-full p-1.5 text-foreground"
-          }
-          onClick={(e) => e.stopPropagation()}
-        >
-          {widget.type !== "section" &&
-            SIZE_ORDER.map((size) => (
-              <button
-                key={size}
-                type="button"
-                aria-label={SIZE_LABELS[size]}
-                title={SIZE_LABELS[size]}
-                onClick={() => dispatch({ type: "resize", id: widget.id, size })}
-                className={`flex size-8 items-center justify-center rounded-full transition ${
-                  widget.size === size
-                    ? "bg-music text-music-foreground"
-                    : "hover:bg-foreground/10"
-                }`}
-              >
-                <SizeGlyph size={size} />
-              </button>
-            ))}
-          {widget.type !== "section" && <span className="mx-0.5 h-5 w-px bg-foreground/15" />}
-          <button
-            type="button"
-            aria-label="Edit widget"
-            onClick={() => onEdit(widget)}
-            className="flex size-8 items-center justify-center rounded-full hover:bg-foreground/10"
-          >
-            <Pencil className="size-3.5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Delete widget"
-            onClick={() => onDelete(widget)}
-            className="flex size-8 items-center justify-center rounded-full text-destructive hover:bg-destructive/15"
-          >
-            <Trash2 className="size-3.5" />
-          </button>
-        </div>
+      {editing && !isDragging && (
+        <TileControls
+          widget={widget}
+          compact={compact}
+          visible={showControls}
+          menuOpen={menuOpen}
+          onMenuOpenChange={setMenuOpen}
+          onResize={(size: WidgetSize) => dispatch({ type: "resize", id: widget.id, size })}
+          onEdit={() => onEdit(widget)}
+          onDelete={() => onDelete(widget)}
+        />
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -160,7 +144,10 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
   const { state, dispatch, editing, setEditing, setSelectedId, preview } = useProfileStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const reduceMotion = useReducedMotion();
   const compact = preview === "mobile" || isMobile;
+  // dnd-kit owns the transforms while dragging; layout animation runs otherwise.
+  const animate = !reduceMotion && activeId === null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -239,6 +226,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
               widget={w}
               index={i}
               compact={compact}
+              animate={animate}
               onEdit={onEdit}
               onDelete={handleDelete}
             />
@@ -248,7 +236,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
       <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
         {active ? (
           <div className="h-full w-full rotate-1 scale-[1.05] opacity-95 drop-shadow-2xl">
-            <WidgetCard widget={active} editing={editing} />
+            <WidgetCard widget={active} editing={false} />
           </div>
         ) : null}
       </DragOverlay>
