@@ -146,7 +146,7 @@ function SortableTile({
             type="button"
             aria-label="Delete widget"
             onClick={() => onDelete(widget)}
-            className="flex size-8 items-center justify-center rounded-full hover:bg-background/15"
+            className="flex size-8 items-center justify-center rounded-full text-destructive hover:bg-destructive/15"
           >
             <Trash2 className="size-3.5" />
           </button>
