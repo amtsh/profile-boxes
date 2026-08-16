@@ -109,9 +109,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     if (!v) setSelectedId(null);
   }, []);
 
+  const [preview, setPreview] = useState<PreviewDevice>("desktop");
+
   const value = useMemo(
-    () => ({ state, dispatch, editing, setEditing, selectedId, setSelectedId, hydrated }),
-    [state, editing, setEditing, selectedId, hydrated],
+    () => ({ state, dispatch, editing, setEditing, selectedId, setSelectedId, hydrated, preview, setPreview }),
+    [state, editing, setEditing, selectedId, hydrated, preview],
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
