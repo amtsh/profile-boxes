@@ -164,7 +164,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
       onDragCancel={() => setActiveId(null)}
     >
       <SortableContext items={state.widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-2 gap-4 [--tile-h:150px] md:grid-cols-3 md:[--tile-h:168px] lg:grid-cols-4 [&>*]:min-h-0 auto-rows-[var(--tile-h)]">
+        <div className="grid grid-flow-row-dense grid-cols-2 gap-4 [--tile-h:150px] md:grid-cols-3 md:[--tile-h:168px] lg:grid-cols-4 [&>*]:min-h-0 auto-rows-[var(--tile-h)]">
           {state.widgets.map((w) => (
             <SortableTile key={w.id} widget={w} onEdit={onEdit} />
           ))}
