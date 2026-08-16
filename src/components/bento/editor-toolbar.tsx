@@ -235,6 +235,19 @@ export function EditorToolbar() {
       </div>
       )}
 
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          void onPickImage(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+
+
+
 
       <div className="fixed right-5 bottom-5 z-50 flex items-center gap-2">
         <button
