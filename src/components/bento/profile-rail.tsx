@@ -55,7 +55,7 @@ function AvatarPresets() {
           onClick={() => dispatch({ type: "profile", patch: { avatar: src } })}
           aria-label="Use this avatar"
           className={`size-8 overflow-hidden rounded-full ring-2 transition ${
-            state.profile.avatar === src ? "ring-foreground" : "ring-transparent hover:ring-border"
+            state.profile.avatar === src ? "ring-music" : "ring-transparent hover:ring-border"
           }`}
         >
           <img src={src} alt="" className="size-full object-cover" />
