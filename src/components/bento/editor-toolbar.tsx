@@ -1,5 +1,17 @@
-import { Check, Monitor, Plus, Pencil, RotateCcw, Smartphone } from "lucide-react";
-import { useState } from "react";
+import {
+  Check,
+  Image as ImageIcon,
+  LayoutTemplate,
+  Link2,
+  Monitor,
+  Plus,
+  Pencil,
+  Quote,
+  RotateCcw,
+  Smartphone,
+  X,
+} from "lucide-react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AddWidgetPanel } from "@/components/bento/add-widget-panel";
@@ -19,7 +31,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { ThemeId } from "@/lib/bento-types";
+import type { ThemeId, Widget } from "@/lib/bento-types";
+import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
 
 const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
   { id: "light", label: "Light", swatch: "bg-[oklch(0.975_0.005_95)] border-black/10" },
@@ -29,13 +42,67 @@ const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
 ];
 
 export function EditorToolbar() {
-  const { state, dispatch, editing, setEditing, preview, setPreview } = useProfileStore();
+  const { state, dispatch, editing, setEditing, preview, setPreview, setSelectedId } =
+    useProfileStore();
   const [addOpen, setAddOpen] = useState(false);
+  const [mode, setMode] = useState<"default" | "link">("default");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkError, setLinkError] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
   const showPill = !isMobile || editing;
+
+  function place(widget: Widget, message: string) {
+    dispatch({ type: "add", widget });
+    setSelectedId(widget.id);
+    setEditing(true);
+    toast.success(message);
+  }
+
+  function closeLinkRow() {
+    setMode("default");
+    setLinkUrl("");
+    setLinkError("");
+  }
+
+  function submitLink() {
+    const result = widgetFromUrl(linkUrl);
+    if (!result) {
+      setLinkError("Enter a valid link, e.g. example.com");
+      return;
+    }
+    place(result.widget, result.message);
+    closeLinkRow();
+  }
+
+  async function onPickImage(file: File | undefined) {
+    if (!file) return;
+    try {
+      const src = await fileToTileDataUrl(file);
+      place(
+        { id: newWidgetId(), type: "image", size: "lg", src, alt: file.name.replace(/\.[^.]+$/, ""), caption: "" },
+        "Image added to your bento",
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not add that image");
+    }
+  }
+
+  function quickAdd(type: "text" | "section") {
+    const { widget, message } = createWidget(type);
+    place(widget, message);
+  }
+
+  const SHORTCUTS = [
+    { id: "link", label: "Add link", Icon: Link2, run: () => setMode("link") },
+    { id: "image", label: "Add image", Icon: ImageIcon, run: () => fileRef.current?.click() },
+    { id: "quote", label: "Add quote", Icon: Quote, run: () => quickAdd("text") },
+    { id: "section", label: "Add section", Icon: LayoutTemplate, run: () => quickAdd("section") },
+  ] as const;
+
 
   return (
     <>
