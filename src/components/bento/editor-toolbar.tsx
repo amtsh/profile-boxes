@@ -96,18 +96,18 @@ export function EditorToolbar() {
         <Drawer open={addOpen} onOpenChange={setAddOpen}>
           <DrawerContent>
             <DrawerHeader className="text-left">
-              <DrawerTitle>Add a widget</DrawerTitle>
-              <DrawerDescription>Paste a link or choose a widget type.</DrawerDescription>
+              <DrawerTitle>Add to Bento</DrawerTitle>
+              <DrawerDescription>Drop in a link, a social, or a widget.</DrawerDescription>
             </DrawerHeader>
-            <div className="px-4 pb-8">{panel}</div>
+            <div className="max-h-[70vh] overflow-y-auto px-4 pb-8">{panel}</div>
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add a widget</DialogTitle>
-              <DialogDescription>Paste a link or choose a widget type.</DialogDescription>
+              <DialogTitle>Add to Bento</DialogTitle>
+              <DialogDescription>Drop in a link, a social, or a widget.</DialogDescription>
             </DialogHeader>
             {panel}
           </DialogContent>
