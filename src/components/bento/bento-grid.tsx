@@ -18,7 +18,6 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
@@ -46,7 +45,7 @@ function SortableTile({
   onDelete: (w: Widget) => void;
 }) {
   const { editing, selectedId, setSelectedId, dispatch } = useProfileStore();
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: widget.id,
     disabled: !editing,
   });
