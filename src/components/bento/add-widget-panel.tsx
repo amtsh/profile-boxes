@@ -39,7 +39,6 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
   const { dispatch, setSelectedId } = useProfileStore();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function add(widget: Widget, message: string) {
     dispatch({ type: "add", widget });
@@ -141,7 +140,6 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
       <div className="space-y-2">
         <div className="relative">
           <Input
-            ref={inputRef}
             value={url}
             placeholder="Paste a link or @handle…"
             aria-label="Paste a link"
@@ -154,7 +152,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
             onClick={submitUrl}
             disabled={!url.trim() || busy}
             aria-label="Add link"
-            className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-music text-music-foreground transition disabled:opacity-30"
+            className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-music text-music-foreground transition hover:brightness-105 active:scale-95 disabled:pointer-events-none disabled:opacity-30"
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
           </button>
