@@ -76,8 +76,8 @@ export function EditorToolbar() {
                     title={t.label}
                     aria-label={`${t.label} theme`}
                     onClick={() => dispatch({ type: "theme", theme: t.id })}
-                    className={`size-6 rounded-full border transition ${t.swatch} ${
-                      state.theme === t.id ? "ring-2 ring-foreground ring-offset-1 ring-offset-card" : ""
+                    className={`size-6 rounded-full border shadow-inner transition ${t.swatch} ${
+                      state.theme === t.id ? "ring-2 ring-music ring-offset-1 ring-offset-transparent" : ""
                     }`}
                   />
                 ))}
