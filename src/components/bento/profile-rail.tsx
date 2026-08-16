@@ -78,7 +78,7 @@ function Socials() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label={meta.label}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card text-card-foreground shadow-[var(--tile-shadow)] transition hover:-translate-y-0.5 hover:shadow-[var(--tile-shadow-hover)] focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none"
+            className="glass-chip flex size-9 shrink-0 items-center justify-center rounded-full text-card-foreground shadow-[var(--tile-shadow)] transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
           >
             <meta.Icon className="size-4" />
           </a>
