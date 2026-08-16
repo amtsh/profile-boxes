@@ -228,7 +228,10 @@ export function EditorToolbar() {
               </button>
             </>
           )}
+            </>
+          )}
         </div>
+
       </div>
       )}
 
