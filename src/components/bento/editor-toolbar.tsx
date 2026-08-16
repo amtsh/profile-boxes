@@ -109,7 +109,48 @@ export function EditorToolbar() {
       {showPill && (
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
         <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
+          {mode === "link" ? (
+            <div className="flex min-w-0 shrink-0 items-center gap-1 pl-2">
+              <Link2 className="size-4 shrink-0 text-muted-foreground" />
+              <div className="flex min-w-0 flex-col">
+                <input
+                  autoFocus
+                  value={linkUrl}
+                  onChange={(e) => {
+                    setLinkUrl(e.target.value);
+                    setLinkError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") submitLink();
+                    if (e.key === "Escape") closeLinkRow();
+                  }}
+                  placeholder="Paste a link…"
+                  aria-label="Link URL"
+                  className="w-56 max-w-[45vw] bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                />
+                {linkError && <span className="px-2 pb-1 text-xs text-destructive">{linkError}</span>}
+              </div>
+              <button
+                type="button"
+                onClick={submitLink}
+                disabled={!linkUrl.trim()}
+                className="rounded-full bg-music px-4 py-2 text-sm font-semibold whitespace-nowrap text-music-foreground transition hover:brightness-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={closeLinkRow}
+                aria-label="Cancel adding link"
+                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-foreground/5 active:scale-95"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <>
           {!isMobile && (
+
 
             <div className="flex shrink-0 items-center gap-1">
               {(
