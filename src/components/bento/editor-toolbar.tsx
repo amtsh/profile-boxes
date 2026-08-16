@@ -176,7 +176,25 @@ export function EditorToolbar() {
             </div>
           )}
 
+          {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
+
+          <div className="flex shrink-0 items-center gap-1">
+            {SHORTCUTS.map(({ id, label, Icon, run }) => (
+              <button
+                key={id}
+                type="button"
+                title={label}
+                aria-label={label}
+                onClick={run}
+                className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition hover:bg-foreground/5 active:scale-95"
+              >
+                <Icon className="size-[18px]" />
+              </button>
+            ))}
+          </div>
+
           {editing && (
+
             <>
               {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
 
