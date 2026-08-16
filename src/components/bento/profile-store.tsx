@@ -58,6 +58,8 @@ function reducer(state: ProfileState, action: Action): ProfileState {
   }
 }
 
+export type PreviewDevice = "desktop" | "mobile";
+
 interface StoreValue {
   state: ProfileState;
   dispatch: React.Dispatch<Action>;
@@ -66,6 +68,8 @@ interface StoreValue {
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
   hydrated: boolean;
+  preview: PreviewDevice;
+  setPreview: (v: PreviewDevice) => void;
 }
 
 const ProfileContext = createContext<StoreValue | null>(null);
