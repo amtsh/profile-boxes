@@ -38,7 +38,7 @@ export function EditorToolbar() {
   return (
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
-        <div className="pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full bg-card p-1.5 shadow-xl ring-1 ring-border backdrop-blur no-scrollbar md:max-w-[calc(100vw-6rem)]">
+        <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
           {!isMobile && (
             <div className="flex shrink-0 items-center gap-1">
               {(
