@@ -39,17 +39,6 @@ export function EditorToolbar() {
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4">
         <div className="pointer-events-auto flex max-w-[calc(100vw-6rem)] items-center gap-1 overflow-x-auto rounded-full bg-card p-1.5 shadow-xl ring-1 ring-border backdrop-blur no-scrollbar">
-          <button
-            type="button"
-            onClick={() => setEditing(!editing)}
-            className="flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold whitespace-nowrap text-background transition hover:opacity-90"
-          >
-            {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
-            {editing ? "Done" : "Edit"}
-          </button>
-
-          <span className="mx-1 h-6 w-px shrink-0 bg-border" />
-
           <div className="flex shrink-0 items-center gap-1">
             {(
               [
@@ -109,17 +98,29 @@ export function EditorToolbar() {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          setEditing(true);
-          setAddOpen(true);
-        }}
-        aria-label="Add to Bento"
-        className="fixed right-5 bottom-5 z-50 flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
-      >
-        <Plus className="size-6" />
-      </button>
+      <div className="fixed right-5 bottom-5 z-50 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setEditing(!editing)}
+          aria-label={editing ? "Done editing" : "Edit"}
+          className="flex items-center gap-1.5 rounded-full bg-card px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground shadow-xl ring-1 ring-border transition hover:bg-muted"
+        >
+          {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
+          {editing ? "Done" : "Edit"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setEditing(true);
+            setAddOpen(true);
+          }}
+          aria-label="Add to Bento"
+          className="flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
+        >
+          <Plus className="size-6" />
+        </button>
+      </div>
 
 
       {isMobile ? (
