@@ -7,7 +7,7 @@ import {
   Type,
   Loader2,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
