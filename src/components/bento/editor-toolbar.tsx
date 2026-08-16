@@ -54,8 +54,8 @@ export function EditorToolbar() {
                   aria-pressed={preview === id}
                   className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
                     preview === id
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:bg-muted"
+                      ? "bg-music text-music-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-foreground/5"
                   }`}
                 >
                   <Icon className="size-4" /> {label}
