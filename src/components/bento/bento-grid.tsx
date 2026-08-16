@@ -102,7 +102,7 @@ function SortableTile({
       </div>
 
       {editing && !selected && (
-        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/60 p-1 text-background opacity-0 group-hover/tile:opacity-100 transition">
+        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/55 p-1 text-background opacity-70 transition">
           <GripVertical className="size-3" />
         </span>
       )}
