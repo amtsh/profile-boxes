@@ -91,7 +91,7 @@ export function EditorToolbar() {
                   dispatch({ type: "reset" });
                   toast.success("Reset to the Shakespeare demo");
                 }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-muted"
+                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-foreground/5"
               >
                 <RotateCcw className="size-4" /> Reset
               </button>
@@ -105,7 +105,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setEditing(!editing)}
           aria-label={editing ? "Done editing" : "Edit"}
-          className="flex items-center gap-1.5 rounded-full bg-card px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground shadow-xl ring-1 ring-border transition hover:bg-muted"
+          className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition hover:brightness-105"
         >
           {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
           {editing ? "Done" : "Edit"}
@@ -115,7 +115,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
+          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_10px_30px_oklch(0.62_0.23_14/0.45)] ring-1 ring-white/25 transition hover:scale-105 active:scale-95"
         >
           <Plus className="size-6" />
         </button>
