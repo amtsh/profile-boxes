@@ -41,7 +41,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
       toast.error("That doesn't look like a valid URL");
       return;
     }
-    const title = host.split(".")[0];
+    const title = host.split(".")[0] ?? host;
     add({
       id: id(),
       type: "link",
@@ -62,11 +62,11 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
         return add({ id: id(), type: "social", size: "sm", platform, handle: PLATFORM_META[platform].label, url: "https://github.com" });
       }
       case "image":
-        return add({ id: id(), type: "image", size: "lg", src: AVATAR_PRESETS[1], alt: "New image", caption: "" });
+        return add({ id: id(), type: "image", size: "lg", src: AVATAR_PRESETS[1]!, alt: "New image", caption: "" });
       case "text":
         return add({ id: id(), type: "text", size: "wide", body: "All the world's a stage.", attribution: "As You Like It" });
       case "map":
-        return add({ id: id(), type: "map", size: "sm", src: AVATAR_PRESETS[3], place: "London" });
+        return add({ id: id(), type: "map", size: "sm", src: AVATAR_PRESETS[3]!, place: "London" });
       case "section":
         return add({ id: id(), type: "section", size: "wide", title: "New section" });
     }
