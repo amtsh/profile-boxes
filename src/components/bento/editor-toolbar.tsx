@@ -104,6 +104,8 @@ export function EditorToolbar() {
           )}
         </div>
       </div>
+      )}
+
 
       <div className="fixed right-5 bottom-5 z-50 flex items-center gap-2">
         <button
