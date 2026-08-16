@@ -128,7 +128,7 @@ function SortableTile({ widget, onEdit }: { widget: Widget; onEdit: (w: Widget) 
 }
 
 export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
-  const { state, dispatch, editing, setSelectedId } = useProfileStore();
+  const { state, dispatch, editing, setSelectedId, preview } = useProfileStore();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
