@@ -251,6 +251,21 @@
   }
 }
 
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility tile-enter {
+  animation: tile-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tile-surface,
   .tile-hover {
@@ -259,4 +274,8 @@
   .tile-hover:hover {
     transform: none;
   }
+  .tile-enter {
+    animation: none;
+  }
 }
+

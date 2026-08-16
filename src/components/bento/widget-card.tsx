@@ -94,8 +94,10 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             className={`size-full object-cover transition-transform duration-500 ${editing ? "" : "group-hover:scale-[1.04]"}`}
           />
           {widget.caption && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-              <p className="font-display text-sm font-medium text-white">{widget.caption}</p>
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center rounded-full bg-card/90 px-3 py-1.5 backdrop-blur">
+              <p className="truncate font-display text-xs font-medium text-card-foreground">
+                {widget.caption}
+              </p>
             </div>
           )}
         </div>
