@@ -113,10 +113,7 @@ export function EditorToolbar() {
 
         <button
           type="button"
-          onClick={() => {
-            setEditing(true);
-            setAddOpen(true);
-          }}
+          onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
           className="flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
         >
