@@ -69,7 +69,7 @@ function SortableTile({
       }}
       style={{ x: transform?.x ?? 0, y: transform?.y ?? 0 }}
       className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
-        isDragging ? "z-40" : ""
+        isDragging ? "z-40" : showControls ? "z-30" : ""
       }`}
 
       onPointerEnter={() => setHovered(true)}
