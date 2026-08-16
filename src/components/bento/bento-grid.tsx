@@ -91,7 +91,7 @@ function SortableTile({
               href={widget.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="block h-full rounded-[1.5rem] focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+              className="block h-full rounded-[1.5rem] focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
             >
               <WidgetCard widget={widget} editing={editing} />
             </a>
@@ -102,7 +102,7 @@ function SortableTile({
       </div>
 
       {editing && !selected && (
-        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/70 p-1 text-background opacity-60 transition">
+        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/60 p-1 text-background opacity-0 group-hover/tile:opacity-100 transition">
           <GripVertical className="size-3" />
         </span>
       )}
@@ -199,7 +199,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
 
   if (state.widgets.length === 0) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border-2 border-dashed border-border p-10 text-center">
+      <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-border p-10 text-center">
         <p className="font-display text-lg font-semibold">Your bento is empty</p>
         <p className="max-w-xs text-sm text-muted-foreground">
           Add a link, a social account, a photo or a note to start building your page.
@@ -207,9 +207,9 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition hover:brightness-105"
+          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition hover:brightness-105 active:scale-95"
         >
-          <Plus className="size-4" /> Add your first widget
+          <Plus className="size-4" /> Start editing
         </button>
       </div>
     );

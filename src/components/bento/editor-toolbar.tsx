@@ -111,6 +111,7 @@ export function EditorToolbar() {
         <button
           type="button"
           onClick={() => setEditing(!editing)}
+          aria-pressed={editing}
           aria-label={editing ? "Done editing" : "Edit"}
           className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition hover:brightness-105"
         >
@@ -122,7 +123,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_10px_30px_oklch(0.62_0.23_14/0.45)] ring-1 ring-white/25 transition hover:scale-105 active:scale-95"
+          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_8px_24px_color-mix(in_oklab,var(--music)_40%,transparent)] ring-1 ring-[oklch(1_0_0/0.25)] transition hover:scale-105 active:scale-95"
         >
           <Plus className="size-6" />
         </button>
