@@ -28,7 +28,7 @@ function Editable({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className={`w-full resize-none rounded-xl border border-border bg-card p-2 outline-none focus:ring-2 focus:ring-foreground/15 ${className ?? ""}`}
+          className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
         />
       );
     }
@@ -36,7 +36,7 @@ function Editable({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-xl border border-border bg-card p-2 outline-none focus:ring-2 focus:ring-foreground/15 ${className ?? ""}`}
+        className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
       />
     );
   }
