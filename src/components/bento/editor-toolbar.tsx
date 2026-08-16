@@ -70,7 +70,8 @@ export function EditorToolbar() {
 
           {editing && (
             <>
-              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
+              {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
+
 
               <div className="flex shrink-0 items-center gap-1 px-1">
                 {THEMES.map((t) => (
