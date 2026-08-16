@@ -22,7 +22,7 @@ export function ProfilePage() {
 
   return (
     <div className={`bento-theme-${state.theme} relative min-h-screen bg-background text-foreground`}>
-      <div aria-hidden className="bento-aurora" />
+
       <main
         className={
           mobilePreview

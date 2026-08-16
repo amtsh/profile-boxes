@@ -35,11 +35,15 @@ export function EditorToolbar() {
 
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
+  const showPill = !isMobile || editing;
+
   return (
     <>
+      {showPill && (
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
         <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
           {!isMobile && (
+
             <div className="flex shrink-0 items-center gap-1">
               {(
                 [
@@ -66,7 +70,8 @@ export function EditorToolbar() {
 
           {editing && (
             <>
-              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
+              {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
+
 
               <div className="flex shrink-0 items-center gap-1 px-1">
                 {THEMES.map((t) => (
@@ -99,11 +104,14 @@ export function EditorToolbar() {
           )}
         </div>
       </div>
+      )}
+
 
       <div className="fixed right-5 bottom-5 z-50 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setEditing(!editing)}
+          aria-pressed={editing}
           aria-label={editing ? "Done editing" : "Edit"}
           className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition hover:brightness-105"
         >
@@ -115,7 +123,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_10px_30px_oklch(0.62_0.23_14/0.45)] ring-1 ring-white/25 transition hover:scale-105 active:scale-95"
+          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_8px_24px_color-mix(in_oklab,var(--music)_40%,transparent)] ring-1 ring-[oklch(1_0_0/0.25)] transition hover:scale-105 active:scale-95"
         >
           <Plus className="size-6" />
         </button>
