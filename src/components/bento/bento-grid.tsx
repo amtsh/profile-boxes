@@ -62,15 +62,17 @@ function SortableTile({
     <motion.div
       ref={setNodeRef}
       layout={animate}
-      transition={{ type: "spring", stiffness: 420, damping: 38, mass: 0.9 }}
-      style={{
-        transform: CSS.Translate.toString(transform),
-        transition,
-        animationDelay: `${Math.min(index, 12) * 40}ms`,
+      initial={animate ? { opacity: 0, scale: 0.97 } : false}
+      animate={{ opacity: isDragging ? 0.4 : 1, scale: isDragging ? 1.04 : 1 }}
+      transition={{
+        layout: { type: "spring", stiffness: 420, damping: 38, mass: 0.9 },
+        default: { duration: 0.35, delay: Math.min(index, 12) * 0.03 },
       }}
-      className={`tile-enter relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
-        isDragging ? "z-40 scale-[1.04] opacity-40" : ""
+      style={{ x: transform?.x ?? 0, y: transform?.y ?? 0 }}
+      className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
+        isDragging ? "z-40" : ""
       }`}
+
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
       onClick={() => editing && compact && setSelectedId(selected ? null : widget.id)}
