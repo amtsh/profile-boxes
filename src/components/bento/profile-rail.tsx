@@ -106,7 +106,7 @@ export function ProfileRail() {
               alt={profile.name}
               width={80}
               height={80}
-              className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)]"
+              className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
             />
             {editing && <AvatarPresets />}
           </div>
@@ -174,7 +174,7 @@ export function ProfileRail() {
             alt={profile.name}
             width={128}
             height={128}
-            className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] md:size-32"
+            className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)] md:size-32"
           />
           {editing && <AvatarPresets />}
         </div>
