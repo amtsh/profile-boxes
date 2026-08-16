@@ -94,7 +94,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             className={`size-full object-cover transition-transform duration-500 ${editing ? "" : "group-hover:scale-[1.04]"}`}
           />
           {widget.caption && (
-            <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center rounded-full bg-card/90 px-3 py-1.5 backdrop-blur">
+            <div className="glass-chip pointer-events-none absolute inset-x-3 bottom-3 flex items-center rounded-full px-3 py-1.5">
               <p className="truncate font-display text-xs font-medium text-card-foreground">
                 {widget.caption}
               </p>
@@ -125,7 +125,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             loading="lazy"
             className="size-full object-cover"
           />
-          <div className="absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 backdrop-blur">
+          <div className="glass-chip absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-full px-3 py-1.5">
             <MapPin className="size-3.5 shrink-0" />
             <span className="truncate text-xs font-medium">{widget.place}</span>
           </div>

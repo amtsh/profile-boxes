@@ -76,7 +76,7 @@ function SortableTile({
       <div
         className={`group/tile h-full ${editing ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""} ${
           selected
-            ? "rounded-[1.5rem] ring-2 ring-foreground ring-offset-2 ring-offset-background"
+            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
             : ""
         }`}
         {...(editing ? { ...attributes, ...listeners } : {})}
@@ -111,8 +111,8 @@ function SortableTile({
         <div
           className={
             compact
-              ? "fixed inset-x-0 bottom-28 z-50 mx-auto flex w-fit items-center gap-1 rounded-full bg-foreground p-1.5 text-background shadow-2xl"
-              : "absolute -bottom-3 left-1/2 z-50 flex -translate-x-1/2 translate-y-full items-center gap-1 rounded-full bg-foreground p-1.5 text-background shadow-lg"
+              ? "glass-panel fixed inset-x-0 bottom-28 z-50 mx-auto flex w-fit items-center gap-1 rounded-full p-1.5 text-foreground"
+              : "glass-panel absolute -bottom-3 left-1/2 z-50 flex -translate-x-1/2 translate-y-full items-center gap-1 rounded-full p-1.5 text-foreground"
           }
           onClick={(e) => e.stopPropagation()}
         >
@@ -125,18 +125,20 @@ function SortableTile({
                 title={SIZE_LABELS[size]}
                 onClick={() => dispatch({ type: "resize", id: widget.id, size })}
                 className={`flex size-8 items-center justify-center rounded-full transition ${
-                  widget.size === size ? "bg-background/25" : "hover:bg-background/15"
+                  widget.size === size
+                    ? "bg-music text-music-foreground"
+                    : "hover:bg-foreground/10"
                 }`}
               >
                 <SizeGlyph size={size} />
               </button>
             ))}
-          {widget.type !== "section" && <span className="mx-0.5 h-5 w-px bg-background/25" />}
+          {widget.type !== "section" && <span className="mx-0.5 h-5 w-px bg-foreground/15" />}
           <button
             type="button"
             aria-label="Edit widget"
             onClick={() => onEdit(widget)}
-            className="flex size-8 items-center justify-center rounded-full hover:bg-background/15"
+            className="flex size-8 items-center justify-center rounded-full hover:bg-foreground/10"
           >
             <Pencil className="size-3.5" />
           </button>
@@ -144,7 +146,7 @@ function SortableTile({
             type="button"
             aria-label="Delete widget"
             onClick={() => onDelete(widget)}
-            className="flex size-8 items-center justify-center rounded-full hover:bg-background/15"
+            className="flex size-8 items-center justify-center rounded-full text-destructive hover:bg-destructive/15"
           >
             <Trash2 className="size-3.5" />
           </button>
@@ -205,7 +207,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition hover:opacity-90"
+          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition hover:brightness-105"
         >
           <Plus className="size-4" /> Add your first widget
         </button>

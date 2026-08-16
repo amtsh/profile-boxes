@@ -28,7 +28,7 @@ function Editable({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className={`w-full resize-none rounded-xl border border-border bg-card p-2 outline-none focus:ring-2 focus:ring-foreground/15 ${className ?? ""}`}
+          className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
         />
       );
     }
@@ -36,7 +36,7 @@ function Editable({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-xl border border-border bg-card p-2 outline-none focus:ring-2 focus:ring-foreground/15 ${className ?? ""}`}
+        className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
       />
     );
   }
@@ -55,7 +55,7 @@ function AvatarPresets() {
           onClick={() => dispatch({ type: "profile", patch: { avatar: src } })}
           aria-label="Use this avatar"
           className={`size-8 overflow-hidden rounded-full ring-2 transition ${
-            state.profile.avatar === src ? "ring-foreground" : "ring-transparent hover:ring-border"
+            state.profile.avatar === src ? "ring-music" : "ring-transparent hover:ring-border"
           }`}
         >
           <img src={src} alt="" className="size-full object-cover" />
@@ -78,7 +78,7 @@ function Socials() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label={meta.label}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card text-card-foreground shadow-[var(--tile-shadow)] transition hover:-translate-y-0.5 hover:shadow-[var(--tile-shadow-hover)] focus-visible:ring-2 focus-visible:ring-foreground focus-visible:outline-none"
+            className="glass-chip flex size-9 shrink-0 items-center justify-center rounded-full text-card-foreground shadow-[var(--tile-shadow)] transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
           >
             <meta.Icon className="size-4" />
           </a>
@@ -106,7 +106,7 @@ export function ProfileRail() {
               alt={profile.name}
               width={80}
               height={80}
-              className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)]"
+              className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
             />
             {editing && <AvatarPresets />}
           </div>
@@ -174,7 +174,7 @@ export function ProfileRail() {
             alt={profile.name}
             width={128}
             height={128}
-            className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] md:size-32"
+            className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)] md:size-32"
           />
           {editing && <AvatarPresets />}
         </div>

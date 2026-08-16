@@ -21,12 +21,13 @@ export function ProfilePage() {
   const mobilePreview = preview === "mobile";
 
   return (
-    <div className={`bento-theme-${state.theme} min-h-screen bg-background text-foreground`}>
+    <div className={`bento-theme-${state.theme} relative min-h-screen bg-background text-foreground`}>
+      <div aria-hidden className="bento-aurora" />
       <main
         className={
           mobilePreview
-            ? "mx-auto flex w-full max-w-[430px] flex-col gap-8 px-5 py-10 pb-48"
-            : "mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 pb-48 lg:flex-row lg:gap-14 lg:px-8 lg:py-16 lg:pb-32"
+            ? "relative z-10 mx-auto flex w-full max-w-[430px] flex-col gap-8 px-5 py-10 pb-48"
+            : "relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 pb-48 lg:flex-row lg:gap-14 lg:px-8 lg:py-16 lg:pb-32"
         }
         onClick={() => editing && setSelectedId(null)}
       >
@@ -44,7 +45,9 @@ export function ProfilePage() {
       <EditorToolbar />
 
       <Dialog open={!!live} onOpenChange={(o) => !o && setEditWidget(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          className={`bento-theme-${state.theme} glass-panel rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
+        >
           <DialogHeader>
             <DialogTitle>Edit widget</DialogTitle>
             <DialogDescription>Changes save automatically.</DialogDescription>

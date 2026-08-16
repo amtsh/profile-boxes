@@ -147,14 +147,14 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
             aria-label="Paste a link"
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitUrl()}
-            className="h-13 rounded-2xl pr-13 pl-4 text-base"
+            className="glass-chip h-13 rounded-2xl border-0 pr-13 pl-4 text-base focus-visible:ring-2 focus-visible:ring-music/40"
           />
           <button
             type="button"
             onClick={submitUrl}
             disabled={!url.trim() || busy}
             aria-label="Add link"
-            className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-foreground text-background transition disabled:opacity-30"
+            className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-music text-music-foreground transition disabled:opacity-30"
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
           </button>
@@ -174,7 +174,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
                 key={p}
                 type="button"
                 onClick={() => addSocial(p)}
-                className="flex items-center gap-2 rounded-full border border-border px-3 py-2 text-xs font-medium transition hover:-translate-y-0.5 hover:shadow-[var(--tile-shadow-hover)]"
+                className="glass-chip flex items-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition hover:-translate-y-0.5 hover:brightness-105"
               >
                 <span className={`flex size-6 items-center justify-center rounded-full ${meta.tint}`}>
                   <meta.Icon className="size-3.5" />
@@ -194,7 +194,7 @@ export function AddWidgetPanel({ onDone }: { onDone: () => void }) {
               key={type}
               type="button"
               onClick={() => addWidget(type)}
-              className="group flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-2.5 text-left transition hover:border-border hover:bg-card"
+              className="group flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-2.5 text-left transition hover:border-[var(--glass-border)] hover:bg-[var(--glass-bg)]"
             >
               <span className="flex size-9 items-center justify-center rounded-xl bg-muted">
                 <Icon className="size-4" />

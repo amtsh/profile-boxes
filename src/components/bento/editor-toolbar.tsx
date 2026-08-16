@@ -38,7 +38,7 @@ export function EditorToolbar() {
   return (
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
-        <div className="pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full bg-card p-1.5 shadow-xl ring-1 ring-border backdrop-blur no-scrollbar md:max-w-[calc(100vw-6rem)]">
+        <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
           {!isMobile && (
             <div className="flex shrink-0 items-center gap-1">
               {(
@@ -54,8 +54,8 @@ export function EditorToolbar() {
                   aria-pressed={preview === id}
                   className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
                     preview === id
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:bg-muted"
+                      ? "bg-music text-music-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-foreground/5"
                   }`}
                 >
                   <Icon className="size-4" /> {label}
@@ -76,8 +76,8 @@ export function EditorToolbar() {
                     title={t.label}
                     aria-label={`${t.label} theme`}
                     onClick={() => dispatch({ type: "theme", theme: t.id })}
-                    className={`size-6 rounded-full border transition ${t.swatch} ${
-                      state.theme === t.id ? "ring-2 ring-foreground ring-offset-1 ring-offset-card" : ""
+                    className={`size-6 rounded-full border shadow-inner transition ${t.swatch} ${
+                      state.theme === t.id ? "ring-2 ring-music ring-offset-1 ring-offset-transparent" : ""
                     }`}
                   />
                 ))}
@@ -91,7 +91,7 @@ export function EditorToolbar() {
                   dispatch({ type: "reset" });
                   toast.success("Reset to the Shakespeare demo");
                 }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-muted"
+                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-foreground/5"
               >
                 <RotateCcw className="size-4" /> Reset
               </button>
@@ -105,7 +105,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setEditing(!editing)}
           aria-label={editing ? "Done editing" : "Edit"}
-          className="flex items-center gap-1.5 rounded-full bg-card px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground shadow-xl ring-1 ring-border transition hover:bg-muted"
+          className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition hover:brightness-105"
         >
           {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
           {editing ? "Done" : "Edit"}
@@ -115,7 +115,7 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition hover:scale-105 active:scale-95"
+          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_10px_30px_oklch(0.62_0.23_14/0.45)] ring-1 ring-white/25 transition hover:scale-105 active:scale-95"
         >
           <Plus className="size-6" />
         </button>
@@ -124,7 +124,9 @@ export function EditorToolbar() {
 
       {isMobile ? (
         <Drawer open={addOpen} onOpenChange={setAddOpen}>
-          <DrawerContent>
+          <DrawerContent
+            className={`bento-theme-${state.theme} glass-panel border-0 bg-background/80 text-foreground`}
+          >
             <DrawerHeader className="text-left">
               <DrawerTitle>Add to Bento</DrawerTitle>
               <DrawerDescription>Drop in a link, a social, or a widget.</DrawerDescription>
@@ -134,7 +136,9 @@ export function EditorToolbar() {
         </Drawer>
       ) : (
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+          <DialogContent
+            className={`bento-theme-${state.theme} glass-panel max-h-[85vh] overflow-y-auto rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
+          >
             <DialogHeader>
               <DialogTitle>Add to Bento</DialogTitle>
               <DialogDescription>Drop in a link, a social, or a widget.</DialogDescription>

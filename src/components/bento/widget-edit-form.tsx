@@ -41,7 +41,7 @@ export function WidgetEditForm({ widget }: { widget: Widget }) {
                     type="button"
                     onClick={() => patch({ platform: p } as Partial<Widget>)}
                     className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                      widget.platform === p ? "border-foreground bg-foreground text-background" : "border-border"
+                      widget.platform === p ? "border-transparent bg-music text-music-foreground" : "border-border"
                     }`}
                   >
                     <meta.Icon className="size-3.5" />
