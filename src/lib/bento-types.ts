@@ -62,7 +62,30 @@ export type Widget =
   | MapWidget
   | SectionWidget;
 
-export type ThemeId = "light" | "dark" | "sage" | "clay";
+export type ThemeId =
+  | "light"
+  | "dark"
+  | "sage"
+  | "clay"
+  | "lavender"
+  | "ocean"
+  | "rose"
+  | "sand"
+  | "midnight"
+  | "forest";
+
+export const THEME_OPTIONS: { id: ThemeId; label: string; swatch: string }[] = [
+  { id: "light", label: "Light", swatch: "oklch(0.975 0.005 95)" },
+  { id: "sand", label: "Sand", swatch: "oklch(0.9 0.06 95)" },
+  { id: "clay", label: "Clay", swatch: "oklch(0.87 0.07 60)" },
+  { id: "rose", label: "Rose", swatch: "oklch(0.86 0.08 15)" },
+  { id: "lavender", label: "Lavender", swatch: "oklch(0.86 0.08 300)" },
+  { id: "ocean", label: "Ocean", swatch: "oklch(0.85 0.08 230)" },
+  { id: "sage", label: "Sage", swatch: "oklch(0.86 0.06 150)" },
+  { id: "forest", label: "Forest", swatch: "oklch(0.32 0.06 160)" },
+  { id: "midnight", label: "Midnight", swatch: "oklch(0.28 0.06 265)" },
+  { id: "dark", label: "Dark", swatch: "oklch(0.17 0.008 260)" },
+];
 
 export interface SocialLink {
   platform: SocialPlatform;
