@@ -18,7 +18,7 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
-import { GripVertical, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -45,7 +45,7 @@ function SortableTile({
   onDelete: (w: Widget) => void;
 }) {
   const { editing, selectedId, setSelectedId, dispatch } = useProfileStore();
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: widget.id,
     disabled: !editing,
   });
@@ -53,33 +53,41 @@ function SortableTile({
 
   // Controls reveal on click/tap on every device.
   const selected = editing && selectedId === widget.id;
-  const showControls = editing && (selected || menuOpen);
+  const showControls = editing && (selected || menuOpen) && !isDragging;
   const dragProps = editing ? { ...attributes, ...listeners } : {};
 
+  const spanClass =
+    widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size];
 
   return (
     <motion.div
       ref={setNodeRef}
       layout={animate}
       initial={animate ? { opacity: 0, scale: 0.97 } : false}
-      animate={{ opacity: isDragging ? 0.4 : 1, scale: isDragging ? 1.04 : 1 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         layout: { type: "spring", stiffness: 420, damping: 38, mass: 0.9 },
         default: { duration: 0.35, delay: Math.min(index, 12) * 0.03 },
       }}
-      style={{ x: transform?.x ?? 0, y: transform?.y ?? 0 }}
-      className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
-        isDragging ? "z-40" : showControls ? "z-30" : ""
-      }`}
+      style={{
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition,
+      }}
+      className={`relative ${spanClass} ${isDragging ? "z-40" : showControls ? "z-30" : ""}`}
       onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
+      {isDragging && (
+        <div className="absolute inset-0 z-50 rounded-[1.5rem] border-2 border-dashed border-music/70 bg-foreground/[0.03]" />
+      )}
       <div
-        className={`group/tile h-full ${
-          editing && compact ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
+        className={`group/tile h-full ${isDragging ? "opacity-0" : ""} ${
+          editing ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
         } ${
-          selected ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background" : ""
+          selected && !isDragging
+            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
+            : ""
         }`}
-        {...(compact ? dragProps : {})}
+        {...dragProps}
       >
         {widget.type === "link" || widget.type === "social" ? (
           editing ? (
@@ -100,25 +108,6 @@ function SortableTile({
           <WidgetCard widget={widget} editing={editing} />
         )}
       </div>
-
-      {editing && !compact && (
-        <button
-          type="button"
-          aria-label="Drag to reorder"
-          {...dragProps}
-          className={`absolute top-2 left-2 z-40 flex size-7 cursor-grab touch-none items-center justify-center rounded-full bg-foreground/60 text-background transition duration-200 active:cursor-grabbing ${
-            showControls ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <GripVertical className="size-3.5" />
-        </button>
-      )}
-
-      {editing && compact && !selected && (
-        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/55 p-1 text-background opacity-70 transition">
-          <GripVertical className="size-3" />
-        </span>
-      )}
 
       {editing && !isDragging && (
         <TileControls
