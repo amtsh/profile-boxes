@@ -89,7 +89,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             ) : (
               <div className="size-10 rounded-xl bg-muted" />
             )}
-            <ArrowUpRight className="size-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+            <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/70" />
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm font-semibold">
@@ -127,7 +127,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             src={widget.src}
             alt={widget.alt}
             loading="lazy"
-            className={`size-full object-cover transition-transform duration-500 ${editing ? "" : "group-hover:scale-[1.04]"}`}
+            className="size-full object-cover"
           />
           {(editing || widget.caption) && (
             <div

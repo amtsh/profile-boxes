@@ -49,13 +49,13 @@ function SortableTile({
     id: widget.id,
     disabled: !editing,
   });
-  const [hovered, setHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Desktop reveals controls on hover; touch keeps tap-to-select.
+  // Controls reveal on click/tap on every device.
   const selected = editing && selectedId === widget.id;
-  const showControls = editing && (compact ? selected : hovered || menuOpen);
+  const showControls = editing && (selected || menuOpen);
   const dragProps = editing ? { ...attributes, ...listeners } : {};
+
 
   return (
     <motion.div
@@ -71,18 +71,13 @@ function SortableTile({
       className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
         isDragging ? "z-40" : showControls ? "z-30" : ""
       }`}
-
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      onClick={() => editing && compact && setSelectedId(selected ? null : widget.id)}
+      onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
       <div
         className={`group/tile h-full ${
           editing && compact ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
         } ${
-          selected && compact
-            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
-            : ""
+          selected ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background" : ""
         }`}
         {...(compact ? dragProps : {})}
       >
@@ -112,7 +107,7 @@ function SortableTile({
           aria-label="Drag to reorder"
           {...dragProps}
           className={`absolute top-2 left-2 z-40 flex size-7 cursor-grab touch-none items-center justify-center rounded-full bg-foreground/60 text-background transition duration-200 active:cursor-grabbing ${
-            hovered || menuOpen ? "opacity-100" : "opacity-0"
+            showControls ? "opacity-100" : "opacity-0"
           }`}
         >
           <GripVertical className="size-3.5" />
