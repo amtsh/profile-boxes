@@ -283,6 +283,7 @@
 
 @utility tile-hover {
   /* hover lift/glow intentionally removed */
+  transform: none;
 }
 
 
