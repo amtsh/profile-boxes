@@ -253,6 +253,104 @@
   --tile-shadow-hover: 0 2px 4px oklch(0.35 0.06 45 / 0.08), 0 24px 56px oklch(0.35 0.06 45 / 0.22);
 }
 
+.bento-theme-lavender {
+  --background: oklch(0.955 0.025 300);
+  --foreground: oklch(0.26 0.04 300);
+  --card: oklch(0.995 0.008 300);
+  --card-foreground: oklch(0.26 0.04 300);
+  --muted: oklch(0.925 0.03 300);
+  --muted-foreground: oklch(0.52 0.04 300);
+  --border: oklch(0.895 0.03 300);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(1 0 0 / 0.55);
+  --glass-highlight: oklch(1 0 0 / 0.78);
+  --glass-panel-bg: oklch(1 0 0 / 0.7);
+  --tile-shadow: 0 1px 1px oklch(0.35 0.06 300 / 0.06), 0 12px 32px oklch(0.35 0.06 300 / 0.13);
+  --tile-shadow-hover: 0 2px 4px oklch(0.35 0.06 300 / 0.08), 0 24px 56px oklch(0.35 0.06 300 / 0.22);
+}
+
+.bento-theme-ocean {
+  --background: oklch(0.955 0.03 230);
+  --foreground: oklch(0.25 0.04 245);
+  --card: oklch(0.995 0.008 230);
+  --card-foreground: oklch(0.25 0.04 245);
+  --muted: oklch(0.925 0.035 230);
+  --muted-foreground: oklch(0.51 0.04 245);
+  --border: oklch(0.895 0.035 230);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(1 0 0 / 0.55);
+  --glass-highlight: oklch(1 0 0 / 0.78);
+  --glass-panel-bg: oklch(1 0 0 / 0.7);
+  --tile-shadow: 0 1px 1px oklch(0.35 0.06 245 / 0.06), 0 12px 32px oklch(0.35 0.06 245 / 0.13);
+  --tile-shadow-hover: 0 2px 4px oklch(0.35 0.06 245 / 0.08), 0 24px 56px oklch(0.35 0.06 245 / 0.22);
+}
+
+.bento-theme-rose {
+  --background: oklch(0.955 0.028 15);
+  --foreground: oklch(0.27 0.05 15);
+  --card: oklch(0.995 0.008 15);
+  --card-foreground: oklch(0.27 0.05 15);
+  --muted: oklch(0.925 0.032 15);
+  --muted-foreground: oklch(0.53 0.045 15);
+  --border: oklch(0.895 0.032 15);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(1 0 0 / 0.55);
+  --glass-highlight: oklch(1 0 0 / 0.78);
+  --glass-panel-bg: oklch(1 0 0 / 0.7);
+  --tile-shadow: 0 1px 1px oklch(0.35 0.06 15 / 0.06), 0 12px 32px oklch(0.35 0.06 15 / 0.13);
+  --tile-shadow-hover: 0 2px 4px oklch(0.35 0.06 15 / 0.08), 0 24px 56px oklch(0.35 0.06 15 / 0.22);
+}
+
+.bento-theme-sand {
+  --background: oklch(0.96 0.02 95);
+  --foreground: oklch(0.26 0.03 90);
+  --card: oklch(0.995 0.006 95);
+  --card-foreground: oklch(0.26 0.03 90);
+  --muted: oklch(0.93 0.025 95);
+  --muted-foreground: oklch(0.52 0.03 90);
+  --border: oklch(0.9 0.025 95);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(1 0 0 / 0.55);
+  --glass-highlight: oklch(1 0 0 / 0.78);
+  --glass-panel-bg: oklch(1 0 0 / 0.7);
+  --tile-shadow: 0 1px 1px oklch(0.35 0.05 90 / 0.06), 0 12px 32px oklch(0.35 0.05 90 / 0.13);
+  --tile-shadow-hover: 0 2px 4px oklch(0.35 0.05 90 / 0.08), 0 24px 56px oklch(0.35 0.05 90 / 0.22);
+}
+
+.bento-theme-midnight {
+  --background: oklch(0.17 0.03 265);
+  --foreground: oklch(0.97 0.004 260);
+  --card: oklch(0.25 0.035 265);
+  --card-foreground: oklch(0.97 0.004 260);
+  --muted: oklch(0.32 0.035 265 / 0.6);
+  --muted-foreground: oklch(0.77 0.02 265);
+  --border: oklch(1 0 0 / 12%);
+  --glass-bg: oklch(1 0 0 / 0.07);
+  --glass-border: oklch(1 0 0 / 0.16);
+  --glass-highlight: oklch(1 0 0 / 0.28);
+  --glass-panel-bg: oklch(0.28 0.035 265 / 0.62);
+  --tile-shadow: 0 1px 1px oklch(0 0 0 / 0.35), 0 14px 40px oklch(0 0 0 / 0.4);
+  --tile-shadow-hover: 0 2px 6px oklch(0 0 0 / 0.4), 0 26px 64px oklch(0 0 0 / 0.55);
+}
+
+.bento-theme-forest {
+  --background: oklch(0.19 0.03 160);
+  --foreground: oklch(0.96 0.006 150);
+  --card: oklch(0.26 0.035 160);
+  --card-foreground: oklch(0.96 0.006 150);
+  --muted: oklch(0.32 0.035 160 / 0.6);
+  --muted-foreground: oklch(0.76 0.02 155);
+  --border: oklch(1 0 0 / 12%);
+  --glass-bg: oklch(1 0 0 / 0.07);
+  --glass-border: oklch(1 0 0 / 0.16);
+  --glass-highlight: oklch(1 0 0 / 0.28);
+  --glass-panel-bg: oklch(0.28 0.035 160 / 0.62);
+  --tile-shadow: 0 1px 1px oklch(0 0 0 / 0.35), 0 14px 40px oklch(0 0 0 / 0.4);
+  --tile-shadow-hover: 0 2px 6px oklch(0 0 0 / 0.4), 0 26px 64px oklch(0 0 0 / 0.55);
+}
+
+
+
 @utility tile-surface {
   background-color: var(--glass-bg);
   background-image: linear-gradient(
