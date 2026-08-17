@@ -48,7 +48,7 @@ export function EditorToolbar() {
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
   const showPill = !isMobile || editing;
-  const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0];
+  const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0]!;
 
 
   function place(widget: Widget, message: string) {
