@@ -164,6 +164,8 @@ export function EditorToolbar() {
                   type="button"
                   onClick={() => setPreview(id)}
                   aria-pressed={preview === id}
+                  aria-label={label}
+                  title={label}
                   className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
                     preview === id
                       ? "bg-music text-music-foreground shadow-sm"
