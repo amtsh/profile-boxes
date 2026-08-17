@@ -109,25 +109,6 @@ function SortableTile({
         )}
       </div>
 
-      {editing && !compact && (
-        <button
-          type="button"
-          aria-label="Drag to reorder"
-          {...dragProps}
-          className={`absolute top-2 left-2 z-40 flex size-7 cursor-grab touch-none items-center justify-center rounded-full bg-foreground/60 text-background transition duration-200 active:cursor-grabbing ${
-            showControls ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <GripVertical className="size-3.5" />
-        </button>
-      )}
-
-      {editing && compact && !selected && (
-        <span className="pointer-events-none absolute top-2 right-2 rounded-full bg-foreground/55 p-1 text-background opacity-70 transition">
-          <GripVertical className="size-3" />
-        </span>
-      )}
-
       {editing && !isDragging && (
         <TileControls
           widget={widget}
