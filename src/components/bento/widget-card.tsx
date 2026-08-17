@@ -127,7 +127,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             src={widget.src}
             alt={widget.alt}
             loading="lazy"
-            className={`size-full object-cover transition-transform duration-500 ${editing ? "" : "group-hover:scale-[1.04]"}`}
+            className="size-full object-cover"
           />
           {(editing || widget.caption) && (
             <div
