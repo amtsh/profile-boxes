@@ -71,18 +71,13 @@ function SortableTile({
       className={`relative ${widget.type === "section" ? "col-span-full row-span-1 h-14 self-end" : SIZE_CLASSES[widget.size]} ${
         isDragging ? "z-40" : showControls ? "z-30" : ""
       }`}
-
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      onClick={() => editing && compact && setSelectedId(selected ? null : widget.id)}
+      onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
       <div
         className={`group/tile h-full ${
           editing && compact ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
         } ${
-          selected && compact
-            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
-            : ""
+          selected ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background" : ""
         }`}
         {...(compact ? dragProps : {})}
       >
