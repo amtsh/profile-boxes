@@ -7,7 +7,6 @@ import {
   Plus,
   Pencil,
   Quote,
-  RotateCcw,
   Smartphone,
   X,
 } from "lucide-react";
@@ -30,16 +29,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { ThemeId, Widget } from "@/lib/bento-types";
+import { THEME_OPTIONS, type Widget } from "@/lib/bento-types";
 import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
-
-const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
-  { id: "light", label: "Light", swatch: "bg-[oklch(0.975_0.005_95)] border-black/10" },
-  { id: "dark", label: "Dark", swatch: "bg-[oklch(0.17_0.008_260)] border-white/20" },
-  { id: "sage", label: "Sage", swatch: "bg-[oklch(0.86_0.06_150)] border-black/10" },
-  { id: "clay", label: "Clay", swatch: "bg-[oklch(0.87_0.07_60)] border-black/10" },
-];
 
 export function EditorToolbar() {
   const { state, dispatch, editing, setEditing, preview, setPreview, setSelectedId } =
@@ -48,12 +41,15 @@ export function EditorToolbar() {
   const [mode, setMode] = useState<"default" | "link">("default");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
+  const [colorsOpen, setColorsOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
   const showPill = !isMobile || editing;
+  const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0];
+
 
   function place(widget: Widget, message: string) {
     dispatch({ type: "add", widget });
