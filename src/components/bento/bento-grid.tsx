@@ -49,13 +49,13 @@ function SortableTile({
     id: widget.id,
     disabled: !editing,
   });
-  const [hovered, setHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Desktop reveals controls on hover; touch keeps tap-to-select.
+  // Controls reveal on click/tap on every device.
   const selected = editing && selectedId === widget.id;
-  const showControls = editing && (compact ? selected : hovered || menuOpen);
+  const showControls = editing && (selected || menuOpen);
   const dragProps = editing ? { ...attributes, ...listeners } : {};
+
 
   return (
     <motion.div
