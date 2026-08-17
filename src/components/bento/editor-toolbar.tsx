@@ -7,7 +7,6 @@ import {
   Plus,
   Pencil,
   Quote,
-  RotateCcw,
   Smartphone,
   X,
 } from "lucide-react";
@@ -30,16 +29,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { ThemeId, Widget } from "@/lib/bento-types";
+import { THEME_OPTIONS, type Widget } from "@/lib/bento-types";
 import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
-
-const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
-  { id: "light", label: "Light", swatch: "bg-[oklch(0.975_0.005_95)] border-black/10" },
-  { id: "dark", label: "Dark", swatch: "bg-[oklch(0.17_0.008_260)] border-white/20" },
-  { id: "sage", label: "Sage", swatch: "bg-[oklch(0.86_0.06_150)] border-black/10" },
-  { id: "clay", label: "Clay", swatch: "bg-[oklch(0.87_0.07_60)] border-black/10" },
-];
 
 export function EditorToolbar() {
   const { state, dispatch, editing, setEditing, preview, setPreview, setSelectedId } =
@@ -48,12 +41,15 @@ export function EditorToolbar() {
   const [mode, setMode] = useState<"default" | "link">("default");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
+  const [colorsOpen, setColorsOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
   const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
 
   const showPill = !isMobile || editing;
+  const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0]!;
+
 
   function place(widget: Widget, message: string) {
     dispatch({ type: "add", widget });
@@ -195,41 +191,52 @@ export function EditorToolbar() {
             ))}
           </div>
 
-          {editing && (
+          <span className="mx-1 h-6 w-px shrink-0 bg-border" />
 
-            <>
-              {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
-
-
-              <div className="flex shrink-0 items-center gap-1 px-1">
-                {THEMES.map((t) => (
+          <Popover open={colorsOpen} onOpenChange={setColorsOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                title={`${activeTheme.label} theme`}
+                aria-label={`Theme: ${activeTheme.label}. Choose another color`}
+                className="flex size-10 shrink-0 items-center justify-center rounded-2xl transition hover:bg-foreground/5 active:scale-95"
+              >
+                <span
+                  className="size-6 rounded-full border border-border shadow-inner ring-2 ring-music ring-offset-1 ring-offset-transparent"
+                  style={{ background: activeTheme.swatch }}
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              sideOffset={12}
+              className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+            >
+              <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Profile color</p>
+              <div className="grid grid-cols-5 gap-2">
+                {THEME_OPTIONS.map((t) => (
                   <button
                     key={t.id}
                     type="button"
                     title={t.label}
                     aria-label={`${t.label} theme`}
-                    onClick={() => dispatch({ type: "theme", theme: t.id })}
-                    className={`size-6 rounded-full border shadow-inner transition ${t.swatch} ${
-                      state.theme === t.id ? "ring-2 ring-music ring-offset-1 ring-offset-transparent" : ""
+                    aria-pressed={state.theme === t.id}
+                    onClick={() => {
+                      dispatch({ type: "theme", theme: t.id });
+                      setColorsOpen(false);
+                    }}
+                    className={`size-8 rounded-full border border-border shadow-inner transition hover:scale-110 active:scale-95 ${
+                      state.theme === t.id
+                        ? "ring-2 ring-music ring-offset-2 ring-offset-transparent"
+                        : ""
                     }`}
+                    style={{ background: t.swatch }}
                   />
                 ))}
               </div>
+            </PopoverContent>
+          </Popover>
 
-              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
-
-              <button
-                type="button"
-                onClick={() => {
-                  dispatch({ type: "reset" });
-                  toast.success("Reset to the Shakespeare demo");
-                }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition hover:bg-foreground/5"
-              >
-                <RotateCcw className="size-4" /> Reset
-              </button>
-            </>
-          )}
             </>
           )}
         </div>
