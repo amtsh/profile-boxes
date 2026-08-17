@@ -170,7 +170,7 @@ export function EditorToolbar() {
                       : "text-muted-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  <Icon className="size-4" /> {label}
+                  <Icon className="size-4" /> {preview === id ? null : label}
                 </button>
               ))}
             </div>
