@@ -373,7 +373,7 @@
     filter 220ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  &:is(.bento-theme-dark *) {
+  &:is(.bento-theme-dark *, .bento-theme-midnight *, .bento-theme-forest *) {
     background-image: none;
     box-shadow: var(--tile-shadow);
   }
