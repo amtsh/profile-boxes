@@ -8,6 +8,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { restrictToParentElement } from "@dnd-kit/modifiers";
@@ -34,6 +35,7 @@ function SortableTile({
   index,
   compact,
   animate,
+  overId,
   onEdit,
   onDelete,
 }: {
@@ -41,6 +43,7 @@ function SortableTile({
   index: number;
   compact: boolean;
   animate: boolean;
+  overId: string | null;
   onEdit: (w: Widget) => void;
   onDelete: (w: Widget) => void;
 }) {
@@ -54,6 +57,7 @@ function SortableTile({
   // Controls reveal on click/tap on every device.
   const selected = editing && selectedId === widget.id;
   const showControls = editing && (selected || menuOpen) && !isDragging;
+  const isDropTarget = overId !== null && widget.id === overId && !isDragging;
   const dragProps = editing ? { ...attributes, ...listeners } : {};
 
   const spanClass =
@@ -76,7 +80,7 @@ function SortableTile({
       className={`relative ${spanClass} ${isDragging ? "z-40" : showControls ? "z-30" : ""}`}
       onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
-      {isDragging && (
+      {isDropTarget && (
         <div className="absolute inset-0 z-50 rounded-[1.5rem] border-2 border-dashed border-music/60 bg-foreground/[0.04]" />
       )}
       <div
@@ -128,6 +132,7 @@ function SortableTile({
 export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
   const { state, dispatch, editing, setEditing, setSelectedId, preview } = useProfileStore();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const reduceMotion = useReducedMotion();
   const compact = preview === "mobile" || isMobile;
@@ -144,12 +149,18 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
 
   function handleStart(e: DragStartEvent) {
     setActiveId(String(e.active.id));
+    setOverId(null);
     setSelectedId(null);
+  }
+
+  function handleOver(e: DragOverEvent) {
+    setOverId(e.over ? String(e.over.id) : null);
   }
 
   function handleEnd(e: DragEndEvent) {
     const { active: a, over } = e;
     setActiveId(null);
+    setOverId(null);
     if (!over || a.id === over.id) return;
     const oldIndex = state.widgets.findIndex((w) => w.id === a.id);
     const newIndex = state.widgets.findIndex((w) => w.id === over.id);
@@ -194,8 +205,12 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
       modifiers={[restrictToParentElement]}
       autoScroll={{ threshold: { x: 0, y: 0.2 } }}
       onDragStart={handleStart}
+      onDragOver={handleOver}
       onDragEnd={handleEnd}
-      onDragCancel={() => setActiveId(null)}
+      onDragCancel={() => {
+        setActiveId(null);
+        setOverId(null);
+      }}
     >
       <SortableContext items={state.widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
         <div
@@ -212,6 +227,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
               index={i}
               compact={compact}
               animate={animate}
+              overId={overId}
               onEdit={onEdit}
               onDelete={handleDelete}
             />
