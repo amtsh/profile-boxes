@@ -137,12 +137,33 @@
     border-color: var(--color-border);
   }
 
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--music) 28%, transparent);
+  }
+
+  :focus-visible {
+    outline: none;
+  }
+
+  img {
+    -webkit-user-drag: none;
   }
 }
+
 
 /* ---------------------------------------------------------------
  * Bento profile design system
