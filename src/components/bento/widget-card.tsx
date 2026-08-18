@@ -37,7 +37,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
     case "section":
       return (
         <div className="flex h-full items-end px-1 pb-2">
-          <h2 className="font-display text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+          <h2 className="text-sm font-semibold">
             <InlineText
               editing={editing}
               value={widget.title}
@@ -69,7 +69,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             }
           />
           <div className="min-w-0">
-            <p className="truncate font-display text-sm font-semibold">{meta.label}</p>
+            <p className="truncate text-sm font-semibold">{meta.label}</p>
             <p className="truncate text-xs text-muted-foreground">
               <InlineText
                 editing={editing}
@@ -86,8 +86,8 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             </p>
           </div>
           {!isSmall && (
-            <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium">
-              Follow <ArrowUpRight className="size-3" aria-hidden />
+            <span className="mt-2 inline-flex w-fit items-center justify-center rounded-lg bg-music px-4 py-1.5 text-xs font-semibold text-music-foreground">
+              Follow
             </span>
           )}
         </div>
@@ -119,7 +119,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/60" aria-hidden />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-display text-sm font-semibold">
+            <p className="truncate text-sm font-semibold">
               <InlineText
                 editing={editing}
                 value={widget.title}
@@ -178,11 +178,11 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
           {editing && <ReplaceImageButton onReplace={(src, alt) => patch({ src, alt } as Partial<Widget>)} />}
           {(editing || widget.caption) && (
             <div
-              className={`glass-chip absolute inset-x-3 bottom-3 flex items-center rounded-full px-3 py-1.5 ${
+              className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pt-8 pb-2.5 ${
                 editing ? "" : "pointer-events-none"
               }`}
             >
-              <p className="truncate font-display text-xs font-medium text-card-foreground">
+              <p className="truncate text-xs font-semibold text-white">
                 <InlineText
                   editing={editing}
                   value={widget.caption ?? ""}
@@ -200,7 +200,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
       return (
         <div className="tile-surface tile-hover flex h-full flex-col justify-between gap-3 overflow-hidden p-5">
           <Quote className="size-5 shrink-0 text-muted-foreground/50" aria-hidden />
-          <p className="font-display text-base leading-snug font-medium text-balance">
+          <p className="text-[15px] leading-snug">
             <InlineText
               editing={editing}
               value={widget.body}
@@ -277,7 +277,7 @@ function PlatformPicker({
       <PopoverContent
         align="start"
         sideOffset={8}
-        className="glass-panel w-auto rounded-2xl border-0 bg-background/80 p-2"
+        className="glass-panel w-auto rounded-xl p-2"
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="flex flex-wrap gap-1">
@@ -391,9 +391,9 @@ function MapTile({
           className="size-full object-cover"
         />
       )}
-      <div className="glass-chip absolute inset-x-3 bottom-3 z-10 flex items-center gap-1.5 rounded-full px-3 py-1.5">
-        <MapPin className="size-3.5 shrink-0" aria-hidden />
-        <span className="truncate text-xs font-medium">
+      <div className="absolute inset-x-0 bottom-0 z-10 flex items-center gap-1.5 bg-gradient-to-t from-black/60 to-transparent px-3 pt-8 pb-2.5">
+        <MapPin className="size-3.5 shrink-0 text-white" aria-hidden />
+        <span className="truncate text-xs font-semibold text-white">
           <InlineText
             editing={editing}
             value={widget.place}

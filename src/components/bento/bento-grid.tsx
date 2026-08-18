@@ -76,14 +76,14 @@ function SortableTile({
       onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
       {isDropTarget && (
-        <div className="absolute inset-0 z-50 rounded-[1.5rem] border-2 border-dashed border-music/60 bg-foreground/[0.04]" />
+        <div className="absolute inset-0 z-50 rounded-[var(--radius-tile)] border-2 border-dashed border-music/60 bg-foreground/[0.04]" />
       )}
       <div
         className={`group/tile h-full ${isDragging ? "opacity-0" : ""} ${
           editing ? "cursor-grab touch-none select-none active:cursor-grabbing" : ""
         } ${
           selected && !isDragging
-            ? "rounded-[1.5rem] ring-2 ring-music ring-offset-2 ring-offset-background"
+            ? "rounded-[var(--radius-tile)] ring-2 ring-music ring-offset-2 ring-offset-background"
             : ""
         }`}
         {...dragProps}
@@ -103,7 +103,7 @@ function SortableTile({
               href={widget.url}
               target="_blank"
               rel="noreferrer noopener"
-              className="block h-full rounded-[1.5rem] focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+              className="block h-full rounded-[var(--radius-tile)] focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
             >
               <WidgetCard widget={widget} editing={editing} />
             </a>
@@ -138,8 +138,8 @@ function EmptyState() {
   }
 
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-border p-10 text-center">
-      <p className="font-display text-lg font-semibold">Your bento is empty</p>
+    <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[var(--radius-tile)] border border-dashed border-border p-10 text-center">
+      <p className="text-lg font-semibold">Your bento is empty</p>
       <p className="max-w-xs text-sm text-muted-foreground">
         Paste a link in the bar below, or add a photo or a note to start.
       </p>
@@ -150,14 +150,14 @@ function EmptyState() {
             setEditing(true);
             requestLinkMode();
           }}
-          className="inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition duration-200 hover:brightness-105 active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-music px-4 py-1.5 text-sm font-semibold text-music-foreground transition duration-150 hover:brightness-110 active:opacity-80"
         >
           <Link2 className="size-4" aria-hidden /> Add a link
         </button>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition hover:bg-foreground/5"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-4 py-1.5 text-sm font-semibold transition hover:bg-muted/80"
         >
           <ImageIcon className="size-4" aria-hidden /> Add a photo
         </button>
@@ -167,7 +167,7 @@ function EmptyState() {
             const { widget, message } = createWidget("text");
             place(widget, message);
           }}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition hover:bg-foreground/5"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-4 py-1.5 text-sm font-semibold transition hover:bg-muted/80"
         >
           <Quote className="size-4" aria-hidden /> Add a note
         </button>

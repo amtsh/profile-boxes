@@ -9,7 +9,7 @@ import type { SocialLink, SocialPlatform } from "@/lib/bento-types";
 import { detectSocialPlatform, normalizeSocialInput, socialUrl } from "@/lib/create-widget";
 
 const pillClass =
-  "inline-flex items-center gap-2 rounded-full border border-border bg-background/50 px-3.5 py-1.5 text-sm font-medium text-foreground shadow-[var(--tile-shadow)] transition duration-200";
+  "inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground transition duration-150";
 
 export function SocialRail() {
   const { state, dispatch, editing } = useProfileStore();
@@ -78,7 +78,7 @@ export function SocialRail() {
           <PopoverContent
             align="start"
             sideOffset={10}
-            className={`bento-theme-${state.theme} glass-panel w-72 rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+            className={`bento-theme-${state.theme} glass-panel w-72 rounded-xl p-3 text-foreground`}
           >
             <AddSocialPanel unused={unused} onAdd={add} />
           </PopoverContent>
@@ -120,7 +120,7 @@ function SocialPill({
         target="_blank"
         rel="noreferrer noopener"
         aria-label={meta.label}
-        className={`${pillClass} hover:-translate-y-0.5 hover:brightness-110 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none`}
+        className={`${pillClass} hover:bg-muted active:opacity-70 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none`}
       >
         {face}
       </a>
@@ -158,7 +158,7 @@ function SocialPill({
       <PopoverContent
         align="start"
         sideOffset={10}
-        className={`bento-theme-${state.theme} glass-panel w-72 rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+        className={`bento-theme-${state.theme} glass-panel w-72 rounded-xl p-3 text-foreground`}
       >
         <SocialUrlEditor
           platform={link.platform}

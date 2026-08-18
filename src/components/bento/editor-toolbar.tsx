@@ -131,7 +131,7 @@ export function EditorToolbar() {
             aria-label={editing ? "Done editing" : "Edit"}
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold whitespace-nowrap transition ${
               editing
-                ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
+                ? "bg-music text-music-foreground"
                 : "text-foreground/80 hover:bg-foreground/5"
             }`}
           >
@@ -169,7 +169,7 @@ export function EditorToolbar() {
                 type="button"
                 onClick={() => void submitLink()}
                 disabled={!linkUrl.trim() || busy}
-                className="rounded-full bg-music px-4 py-2 text-sm font-semibold whitespace-nowrap text-music-foreground transition hover:brightness-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
+                className="rounded-lg bg-music px-4 py-1.5 text-sm font-semibold whitespace-nowrap text-music-foreground transition hover:brightness-110 active:opacity-80 disabled:pointer-events-none disabled:opacity-40"
               >
                 {busy ? "Adding…" : "Add"}
               </button>
@@ -221,7 +221,7 @@ export function EditorToolbar() {
                 <PopoverContent
                   align="end"
                   sideOffset={12}
-                  className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+                  className={`bento-theme-${state.theme} glass-panel w-auto rounded-xl p-3 text-foreground`}
                 >
                   <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Profile color</p>
                   <div className="grid grid-cols-5 gap-2">
@@ -263,7 +263,7 @@ export function EditorToolbar() {
                 <PopoverContent
                   align="end"
                   sideOffset={12}
-                  className={`bento-theme-${state.theme} glass-panel w-56 rounded-2xl border-0 bg-background/80 p-2 text-foreground`}
+                  className={`bento-theme-${state.theme} glass-panel w-56 rounded-xl p-2 text-foreground`}
                 >
                   <div className="flex gap-1 p-1">
                     {(

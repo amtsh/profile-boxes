@@ -77,16 +77,16 @@ export type ThemeId =
   | "forest";
 
 export const THEME_OPTIONS: { id: ThemeId; label: string; swatch: string }[] = [
-  { id: "light", label: "Light", swatch: "oklch(0.975 0.005 95)" },
-  { id: "sand", label: "Sand", swatch: "oklch(0.9 0.06 95)" },
-  { id: "clay", label: "Clay", swatch: "oklch(0.87 0.07 60)" },
-  { id: "rose", label: "Rose", swatch: "oklch(0.86 0.08 15)" },
-  { id: "lavender", label: "Lavender", swatch: "oklch(0.86 0.08 300)" },
-  { id: "ocean", label: "Ocean", swatch: "oklch(0.85 0.08 230)" },
-  { id: "sage", label: "Sage", swatch: "oklch(0.86 0.06 150)" },
-  { id: "forest", label: "Forest", swatch: "oklch(0.32 0.06 160)" },
-  { id: "midnight", label: "Midnight", swatch: "oklch(0.28 0.06 265)" },
-  { id: "dark", label: "Dark", swatch: "oklch(0.17 0.008 260)" },
+  { id: "light", label: "Light", swatch: "oklch(0.984 0 0)" },
+  { id: "sand", label: "Sand", swatch: "oklch(0.94 0.02 95)" },
+  { id: "clay", label: "Clay", swatch: "oklch(0.94 0.025 60)" },
+  { id: "rose", label: "Rose", swatch: "oklch(0.94 0.03 15)" },
+  { id: "lavender", label: "Lavender", swatch: "oklch(0.94 0.025 300)" },
+  { id: "ocean", label: "Ocean", swatch: "oklch(0.94 0.025 230)" },
+  { id: "sage", label: "Sage", swatch: "oklch(0.94 0.02 150)" },
+  { id: "forest", label: "Forest", swatch: "oklch(0.22 0.03 160)" },
+  { id: "midnight", label: "Midnight", swatch: "oklch(0.18 0.03 265)" },
+  { id: "dark", label: "Dark", swatch: "oklch(0 0 0)" },
 ];
 
 export interface SocialLink {

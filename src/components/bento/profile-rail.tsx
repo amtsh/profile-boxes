@@ -37,7 +37,7 @@ function Editable({
             if (next !== value) onCommit(next);
           }}
           rows={4}
-          className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
+          className={`glass-chip w-full resize-none rounded-lg p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
         />
       );
     }
@@ -52,12 +52,27 @@ function Editable({
         onKeyDown={(e) => {
           if (e.key === "Enter") e.currentTarget.blur();
         }}
-        className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
+        className={`glass-chip w-full rounded-lg p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
       />
     );
   }
   const Tag = as;
   return <Tag className={className}>{value}</Tag>;
+}
+
+function AvatarPhoto({ src, alt, className }: { src: string; alt: string; className: string }) {
+  return (
+    <div className={`ig-story-ring ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        width={128}
+        height={128}
+        draggable={false}
+        className="size-full rounded-full bg-background object-cover ring-2 ring-background"
+      />
+    </div>
+  );
 }
 
 function AvatarEditor() {
@@ -125,14 +140,7 @@ export function ProfileRail() {
       <aside className="w-full">
         <div className="flex items-start gap-4">
           <div className="shrink-0">
-            <img
-              src={profile.avatar}
-              alt={profile.name}
-              width={80}
-              height={80}
-              draggable={false}
-              className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
-            />
+            <AvatarPhoto src={profile.avatar} alt={profile.name} className="size-20" />
             {editing && <AvatarEditor />}
           </div>
           <div className="min-w-0 flex-1 space-y-1">
@@ -141,13 +149,13 @@ export function ProfileRail() {
               editing={editing}
               value={profile.name}
               onCommit={(v) => dispatch({ type: "profile", patch: { name: v } })}
-              className="font-display text-2xl leading-tight font-bold tracking-tight"
+              className="text-xl leading-tight font-semibold"
             />
             <Editable
               editing={editing}
               value={profile.headline}
               onCommit={(v) => dispatch({ type: "profile", patch: { headline: v } })}
-              className="text-sm font-medium text-muted-foreground"
+              className="text-sm font-semibold"
             />
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <MapPin className="size-3.5 shrink-0" aria-hidden />
@@ -168,20 +176,16 @@ export function ProfileRail() {
               multiline
               value={profile.bio}
               onCommit={(v) => dispatch({ type: "profile", patch: { bio: v } })}
-              className="text-sm leading-relaxed text-muted-foreground"
+              className="text-sm leading-snug"
             />
           ) : (
-            <p
-              className={`text-sm leading-relaxed text-muted-foreground ${bioOpen ? "" : "line-clamp-2"}`}
-            >
-              {profile.bio}
-            </p>
+            <p className={`text-sm leading-snug ${bioOpen ? "" : "line-clamp-2"}`}>{profile.bio}</p>
           )}
           {!editing && longBio && (
             <button
               type="button"
               onClick={() => setBioOpen((v) => !v)}
-              className="mt-1 rounded text-sm font-semibold text-foreground underline-offset-4 transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
+              className="mt-1 text-sm font-semibold text-music"
             >
               {bioOpen ? "less" : "more"}
             </button>
@@ -199,14 +203,7 @@ export function ProfileRail() {
     <aside className="lg:sticky lg:top-12 lg:h-fit lg:w-[320px] lg:shrink-0">
       <div className="flex flex-col items-start gap-4">
         <div className="relative">
-          <img
-            src={profile.avatar}
-            alt={profile.name}
-            width={128}
-            height={128}
-            draggable={false}
-            className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)] md:size-32"
-          />
+          <AvatarPhoto src={profile.avatar} alt={profile.name} className="size-24 md:size-32" />
           {editing && <AvatarEditor />}
         </div>
 
@@ -216,20 +213,20 @@ export function ProfileRail() {
             editing={editing}
             value={profile.name}
             onCommit={(v) => dispatch({ type: "profile", patch: { name: v } })}
-            className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl"
+            className="text-2xl leading-tight font-semibold md:text-3xl"
           />
           <Editable
             editing={editing}
             value={profile.headline}
             onCommit={(v) => dispatch({ type: "profile", patch: { headline: v } })}
-            className="text-base font-medium text-muted-foreground"
+            className="text-sm font-semibold"
           />
           <Editable
             editing={editing}
             multiline
             value={profile.bio}
             onCommit={(v) => dispatch({ type: "profile", patch: { bio: v } })}
-            className="text-sm leading-relaxed text-muted-foreground"
+            className="text-sm leading-snug"
           />
           <p className="flex items-center gap-1.5 pt-1 text-sm text-muted-foreground">
             <MapPin className="size-4 shrink-0" aria-hidden />
