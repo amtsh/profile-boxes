@@ -28,7 +28,7 @@ function Editable({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
+          className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
         />
       );
     }
@@ -36,7 +36,7 @@ function Editable({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 ${className ?? ""}`}
+        className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
       />
     );
   }
@@ -58,7 +58,8 @@ function AvatarPresets() {
             state.profile.avatar === src ? "ring-music" : "ring-transparent hover:ring-border"
           }`}
         >
-          <img src={src} alt="" className="size-full object-cover" />
+          <img src={src} alt="" className="size-full object-cover"
+            draggable={false} />
         </button>
       ))}
     </div>
@@ -78,7 +79,7 @@ function Socials() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label={meta.label}
-            className="glass-chip flex size-9 shrink-0 items-center justify-center rounded-full text-card-foreground shadow-[var(--tile-shadow)] transition hover:-translate-y-0.5 hover:brightness-110 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
+            className="glass-chip flex size-9 shrink-0 items-center justify-center rounded-full text-card-foreground shadow-[var(--tile-shadow)] transition duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
           >
             <meta.Icon className="size-4" />
           </a>
@@ -106,7 +107,9 @@ export function ProfileRail() {
               alt={profile.name}
               width={80}
               height={80}
+              draggable={false}
               className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
+
             />
             {editing && <AvatarPresets />}
           </div>
@@ -125,7 +128,7 @@ export function ProfileRail() {
               className="text-sm font-medium text-muted-foreground"
             />
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="size-3.5" />
+              <MapPin className="size-3.5 shrink-0" aria-hidden />
               {profile.location}
             </p>
           </div>
@@ -151,7 +154,7 @@ export function ProfileRail() {
             <button
               type="button"
               onClick={() => setBioOpen((v) => !v)}
-              className="mt-1 text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+              className="mt-1 rounded text-sm font-semibold text-foreground underline-offset-4 transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
             >
               {bioOpen ? "less" : "more"}
             </button>
@@ -174,6 +177,7 @@ export function ProfileRail() {
             alt={profile.name}
             width={128}
             height={128}
+            draggable={false}
             className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)] md:size-32"
           />
           {editing && <AvatarPresets />}
@@ -201,7 +205,7 @@ export function ProfileRail() {
             className="text-sm leading-relaxed text-muted-foreground"
           />
           <p className="flex items-center gap-1.5 pt-1 text-sm text-muted-foreground">
-            <MapPin className="size-4" />
+            <MapPin className="size-4 shrink-0" aria-hidden />
             {profile.location}
           </p>
         </div>
