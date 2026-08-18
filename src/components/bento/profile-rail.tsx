@@ -1,32 +1,40 @@
-import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { Camera, MapPin } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
-import { PLATFORM_META } from "@/components/bento/social-icons";
 import { AVATAR_PRESETS } from "@/data/shakespeare";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { fileToTileDataUrl } from "@/lib/create-widget";
 
 function Editable({
   value,
-  onChange,
+  onCommit,
   editing,
   className,
   as = "p",
   multiline,
 }: {
   value: string;
-  onChange: (v: string) => void;
+  onCommit: (v: string) => void;
   editing: boolean;
   className?: string;
   as?: "h1" | "p";
   multiline?: boolean;
 }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+
   if (editing) {
     if (multiline) {
       return (
         <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => {
+            const next = draft.trim();
+            if (next !== value) onCommit(next);
+          }}
           rows={4}
           className={`glass-chip w-full resize-none rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
         />
@@ -34,8 +42,15 @@ function Editable({
     }
     return (
       <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => {
+          const next = draft.trim();
+          if (next !== value) onCommit(next);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+        }}
         className={`glass-chip w-full rounded-xl p-2 outline-none focus:ring-2 focus:ring-music/40 focus:ring-offset-0 ${className ?? ""}`}
       />
     );
@@ -44,10 +59,31 @@ function Editable({
   return <Tag className={className}>{value}</Tag>;
 }
 
-function AvatarPresets() {
+function AvatarEditor() {
   const { state, dispatch } = useProfileStore();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function onPick(file: File | undefined) {
+    if (!file) return;
+    try {
+      const src = await fileToTileDataUrl(file);
+      dispatch({ type: "profile", patch: { avatar: src } });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not use that photo");
+    }
+  }
+
   return (
-    <div className="mt-3 flex gap-2">
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        className="glass-chip flex size-8 items-center justify-center rounded-full transition hover:brightness-105"
+        aria-label="Upload avatar"
+        title="Upload photo"
+      >
+        <Camera className="size-3.5" aria-hidden />
+      </button>
       {AVATAR_PRESETS.map((src) => (
         <button
           key={src}
@@ -58,33 +94,19 @@ function AvatarPresets() {
             state.profile.avatar === src ? "ring-music" : "ring-transparent hover:ring-border"
           }`}
         >
-          <img src={src} alt="" className="size-full object-cover"
-            draggable={false} />
+          <img src={src} alt="" className="size-full object-cover" draggable={false} />
         </button>
       ))}
-    </div>
-  );
-}
-
-function Socials() {
-  const { state } = useProfileStore();
-  return (
-    <div className="no-scrollbar -mx-1 flex max-w-full gap-2 overflow-x-auto px-1 pt-1">
-      {state.profile.socials.map((s) => {
-        const meta = PLATFORM_META[s.platform];
-        return (
-          <a
-            key={s.platform}
-            href={s.url}
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label={meta.label}
-            className="glass-chip flex size-9 shrink-0 items-center justify-center rounded-full text-card-foreground shadow-[var(--tile-shadow)] transition duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
-          >
-            <meta.Icon className="size-4" />
-          </a>
-        );
-      })}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          void onPick(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }
@@ -109,27 +131,31 @@ export function ProfileRail() {
               height={80}
               draggable={false}
               className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
-
             />
-            {editing && <AvatarPresets />}
+            {editing && <AvatarEditor />}
           </div>
           <div className="min-w-0 flex-1 space-y-1">
             <Editable
               as="h1"
               editing={editing}
               value={profile.name}
-              onChange={(v) => dispatch({ type: "profile", patch: { name: v } })}
+              onCommit={(v) => dispatch({ type: "profile", patch: { name: v } })}
               className="font-display text-2xl leading-tight font-bold tracking-tight"
             />
             <Editable
               editing={editing}
               value={profile.headline}
-              onChange={(v) => dispatch({ type: "profile", patch: { headline: v } })}
+              onCommit={(v) => dispatch({ type: "profile", patch: { headline: v } })}
               className="text-sm font-medium text-muted-foreground"
             />
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <MapPin className="size-3.5 shrink-0" aria-hidden />
-              {profile.location}
+              <Editable
+                editing={editing}
+                value={profile.location}
+                onCommit={(v) => dispatch({ type: "profile", patch: { location: v } })}
+                className="min-w-0 flex-1 text-xs text-muted-foreground"
+              />
             </p>
           </div>
         </div>
@@ -140,7 +166,7 @@ export function ProfileRail() {
               editing
               multiline
               value={profile.bio}
-              onChange={(v) => dispatch({ type: "profile", patch: { bio: v } })}
+              onCommit={(v) => dispatch({ type: "profile", patch: { bio: v } })}
               className="text-sm leading-relaxed text-muted-foreground"
             />
           ) : (
@@ -160,10 +186,6 @@ export function ProfileRail() {
             </button>
           )}
         </div>
-
-        <div className="mt-3">
-          <Socials />
-        </div>
       </aside>
     );
   }
@@ -180,7 +202,7 @@ export function ProfileRail() {
             draggable={false}
             className="size-24 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)] md:size-32"
           />
-          {editing && <AvatarPresets />}
+          {editing && <AvatarEditor />}
         </div>
 
         <div className="w-full space-y-2">
@@ -188,29 +210,32 @@ export function ProfileRail() {
             as="h1"
             editing={editing}
             value={profile.name}
-            onChange={(v) => dispatch({ type: "profile", patch: { name: v } })}
+            onCommit={(v) => dispatch({ type: "profile", patch: { name: v } })}
             className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl"
           />
           <Editable
             editing={editing}
             value={profile.headline}
-            onChange={(v) => dispatch({ type: "profile", patch: { headline: v } })}
+            onCommit={(v) => dispatch({ type: "profile", patch: { headline: v } })}
             className="text-base font-medium text-muted-foreground"
           />
           <Editable
             editing={editing}
             multiline
             value={profile.bio}
-            onChange={(v) => dispatch({ type: "profile", patch: { bio: v } })}
+            onCommit={(v) => dispatch({ type: "profile", patch: { bio: v } })}
             className="text-sm leading-relaxed text-muted-foreground"
           />
           <p className="flex items-center gap-1.5 pt-1 text-sm text-muted-foreground">
             <MapPin className="size-4 shrink-0" aria-hidden />
-            {profile.location}
+            <Editable
+              editing={editing}
+              value={profile.location}
+              onCommit={(v) => dispatch({ type: "profile", patch: { location: v } })}
+              className="min-w-0 flex-1 text-sm text-muted-foreground"
+            />
           </p>
         </div>
-
-        <Socials />
       </div>
     </aside>
   );

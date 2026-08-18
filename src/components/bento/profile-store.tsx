@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -13,9 +14,12 @@ import { shakespeareProfile } from "@/data/shakespeare";
 import type { Profile, ProfileState, ThemeId, Widget, WidgetSize } from "@/lib/bento-types";
 
 const STORAGE_KEY = "bento-profile-v1";
+const DRAG_HINT_KEY = "bento-dragged";
+const HISTORY_LIMIT = 50;
 
 type Action =
   | { type: "hydrate"; state: ProfileState }
+  | { type: "restore"; state: ProfileState }
   | { type: "reset" }
   | { type: "reorder"; widgets: Widget[] }
   | { type: "add"; widget: Widget }
@@ -28,6 +32,7 @@ type Action =
 function reducer(state: ProfileState, action: Action): ProfileState {
   switch (action.type) {
     case "hydrate":
+    case "restore":
       return action.state;
     case "reset":
       return structuredClone(shakespeareProfile);
@@ -62,23 +67,41 @@ export type PreviewDevice = "desktop" | "mobile";
 
 interface StoreValue {
   state: ProfileState;
-  dispatch: React.Dispatch<Action>;
+  dispatch: (action: Action) => void;
   editing: boolean;
   setEditing: (v: boolean) => void;
   selectedId: string | null;
   setSelectedId: (id: string | null) => void;
+  focusWidgetId: string | null;
+  setFocusWidgetId: (id: string | null) => void;
   hydrated: boolean;
   preview: PreviewDevice;
   setPreview: (v: PreviewDevice) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  linkNonce: number;
+  requestLinkMode: () => void;
+  hasDragged: boolean;
+  markDragged: () => void;
 }
 
 const ProfileContext = createContext<StoreValue | null>(null);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, shakespeareProfile, structuredClone);
+  const [state, rawDispatch] = useReducer(reducer, shakespeareProfile, structuredClone);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   const [editing, setEditingRaw] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [focusWidgetId, setFocusWidgetId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [past, setPast] = useState<ProfileState[]>([]);
+  const [future, setFuture] = useState<ProfileState[]>([]);
+  const [linkNonce, setLinkNonce] = useState(0);
+  const [hasDragged, setHasDragged] = useState(false);
 
   useEffect(() => {
     try {
@@ -86,9 +109,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw) as ProfileState;
         if (parsed?.profile && Array.isArray(parsed.widgets)) {
-          dispatch({ type: "hydrate", state: parsed });
+          rawDispatch({ type: "hydrate", state: parsed });
         }
       }
+      if (window.sessionStorage.getItem(DRAG_HINT_KEY) === "1") setHasDragged(true);
+      if (new URLSearchParams(window.location.search).has("edit")) setEditingRaw(true);
     } catch {
       /* ignore corrupt storage */
     }
@@ -104,16 +129,95 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
   }, [state, hydrated]);
 
+  const dispatch = useCallback((action: Action) => {
+    if (action.type !== "hydrate" && action.type !== "restore") {
+      setPast((p) => [...p.slice(-(HISTORY_LIMIT - 1)), structuredClone(stateRef.current)]);
+      setFuture([]);
+    }
+    rawDispatch(action);
+  }, []);
+
+  const undo = useCallback(() => {
+    setPast((p) => {
+      if (p.length === 0) return p;
+      const prev = p[p.length - 1]!;
+      setFuture((f) => [...f, structuredClone(stateRef.current)]);
+      rawDispatch({ type: "restore", state: prev });
+      return p.slice(0, -1);
+    });
+  }, []);
+
+  const redo = useCallback(() => {
+    setFuture((f) => {
+      if (f.length === 0) return f;
+      const next = f[f.length - 1]!;
+      setPast((p) => [...p, structuredClone(stateRef.current)]);
+      rawDispatch({ type: "restore", state: next });
+      return f.slice(0, -1);
+    });
+  }, []);
+
   const setEditing = useCallback((v: boolean) => {
     setEditingRaw(v);
-    if (!v) setSelectedId(null);
+    if (!v) {
+      setSelectedId(null);
+      setFocusWidgetId(null);
+    }
+  }, []);
+
+  const requestLinkMode = useCallback(() => setLinkNonce((n) => n + 1), []);
+
+  const markDragged = useCallback(() => {
+    setHasDragged(true);
+    try {
+      window.sessionStorage.setItem(DRAG_HINT_KEY, "1");
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const [preview, setPreview] = useState<PreviewDevice>("desktop");
 
   const value = useMemo(
-    () => ({ state, dispatch, editing, setEditing, selectedId, setSelectedId, hydrated, preview, setPreview }),
-    [state, editing, setEditing, selectedId, hydrated, preview],
+    () => ({
+      state,
+      dispatch,
+      editing,
+      setEditing,
+      selectedId,
+      setSelectedId,
+      focusWidgetId,
+      setFocusWidgetId,
+      hydrated,
+      preview,
+      setPreview,
+      undo,
+      redo,
+      canUndo: past.length > 0,
+      canRedo: future.length > 0,
+      linkNonce,
+      requestLinkMode,
+      hasDragged,
+      markDragged,
+    }),
+    [
+      state,
+      dispatch,
+      editing,
+      setEditing,
+      selectedId,
+      focusWidgetId,
+      hydrated,
+      preview,
+      undo,
+      redo,
+      past.length,
+      future.length,
+      linkNonce,
+      requestLinkMode,
+      hasDragged,
+      markDragged,
+    ],
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

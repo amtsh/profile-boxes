@@ -6,37 +6,60 @@ import {
   Link2,
   MapPin,
   Monitor,
+  MoreHorizontal,
   Pencil,
   Quote,
+  Redo2,
+  RotateCcw,
   Smartphone,
+  Undo2,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
 import { PLATFORM_META } from "@/components/bento/social-icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { THEME_OPTIONS, type SocialPlatform, type Widget } from "@/lib/bento-types";
-import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
+import { createWidget, fileToTileDataUrl, newWidgetId, socialUrl, widgetFromUrl } from "@/lib/create-widget";
+import { unfurlLink } from "@/lib/enrich";
 
 export function EditorToolbar() {
-  const { state, dispatch, editing, setEditing, preview, setPreview, setSelectedId } =
-    useProfileStore();
+  const {
+    state,
+    dispatch,
+    editing,
+    setEditing,
+    preview,
+    setPreview,
+    setSelectedId,
+    setFocusWidgetId,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    linkNonce,
+  } = useProfileStore();
   const [mode, setMode] = useState<"default" | "link">("default");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
+  const [busy, setBusy] = useState(false);
   const [colorsOpen, setColorsOpen] = useState(false);
   const [socialsOpen, setSocialsOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const isMobile = useIsMobile();
 
   const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0]!;
 
-  function place(widget: Widget, message: string) {
+  useEffect(() => {
+    if (linkNonce > 0) setMode("link");
+  }, [linkNonce]);
+
+  function place(widget: Widget, message: string, focus = false) {
     dispatch({ type: "add", widget });
     setSelectedId(widget.id);
+    setFocusWidgetId(focus ? widget.id : null);
     setEditing(true);
     toast.success(message);
   }
@@ -47,13 +70,24 @@ export function EditorToolbar() {
     setLinkError("");
   }
 
-  function submitLink() {
+  async function submitLink() {
     const result = widgetFromUrl(linkUrl);
     if (!result) {
       setLinkError("Enter a valid link, e.g. example.com");
       return;
     }
-    place(result.widget, result.message);
+    if (result.widget.type === "link") {
+      setBusy(true);
+      try {
+        const meta = await unfurlLink(result.widget.url);
+        place({ ...result.widget, ...meta }, `${meta.title} added`);
+      } finally {
+        setBusy(false);
+      }
+    } else {
+      const needsHandle = result.widget.type === "social" && !result.widget.handle;
+      place(result.widget, result.message, needsHandle);
+    }
     closeLinkRow();
   }
 
@@ -79,7 +113,7 @@ export function EditorToolbar() {
 
   function quickAdd(type: "text" | "section" | "map") {
     const { widget, message } = createWidget(type);
-    place(widget, message);
+    place(widget, message, type !== "map");
   }
 
   function addSocial(platform: SocialPlatform) {
@@ -90,10 +124,11 @@ export function EditorToolbar() {
         type: "social",
         size: "sm",
         platform,
-        handle: meta.label,
-        url: `https://${platform === "x" ? "x.com" : `${platform}.com`}`,
+        handle: "",
+        url: socialUrl(platform, ""),
       },
-      `${meta.label} added — tap the tile to set your handle`,
+      `${meta.label} added — type your handle`,
+      true,
     );
     setSocialsOpen(false);
   }
@@ -138,13 +173,14 @@ export function EditorToolbar() {
                     setLinkError("");
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") submitLink();
+                    if (e.key === "Enter") void submitLink();
                     if (e.key === "Escape") closeLinkRow();
                   }}
                   placeholder="Paste a link…"
                   inputMode="url"
                   autoComplete="off"
                   spellCheck={false}
+                  disabled={busy}
                   aria-label="Link URL"
                   className="w-56 max-w-[45vw] bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
                 />
@@ -152,11 +188,11 @@ export function EditorToolbar() {
               </div>
               <button
                 type="button"
-                onClick={submitLink}
-                disabled={!linkUrl.trim()}
+                onClick={() => void submitLink()}
+                disabled={!linkUrl.trim() || busy}
                 className="rounded-full bg-music px-4 py-2 text-sm font-semibold whitespace-nowrap text-music-foreground transition hover:brightness-105 active:scale-95 disabled:pointer-events-none disabled:opacity-40"
               >
-                Add
+                {busy ? "Adding…" : "Add"}
               </button>
               <button
                 type="button"
@@ -169,36 +205,6 @@ export function EditorToolbar() {
             </div>
           ) : (
             <>
-              {!isMobile && (
-                <>
-                  <span className="mx-1 h-6 w-px shrink-0 bg-border" />
-                  <div className="flex shrink-0 items-center gap-1">
-                    {(
-                      [
-                        { id: "desktop", label: "Desktop", Icon: Monitor },
-                        { id: "mobile", label: "Mobile", Icon: Smartphone },
-                      ] as const
-                    ).map(({ id, label, Icon }) => (
-                      <button
-                        key={id}
-                        type="button"
-                        onClick={() => setPreview(id)}
-                        aria-pressed={preview === id}
-                        aria-label={label}
-                        title={label}
-                        className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
-                          preview === id
-                            ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
-                            : "text-muted-foreground hover:bg-foreground/5"
-                        }`}
-                      >
-                        <Icon className="size-4" /> {preview === id ? null : label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-
               <span className="mx-1 h-6 w-px shrink-0 bg-border" />
 
               <div className="flex shrink-0 items-center gap-1">
@@ -301,6 +307,81 @@ export function EditorToolbar() {
                       />
                     ))}
                   </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    title="More"
+                    aria-label="More"
+                    aria-expanded={moreOpen}
+                    className="flex size-10 shrink-0 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
+                  >
+                    <MoreHorizontal className="size-[18px]" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={12}
+                  className={`bento-theme-${state.theme} glass-panel w-56 rounded-2xl border-0 bg-background/80 p-2 text-foreground`}
+                >
+                  <div className="flex gap-1 p-1">
+                    {(
+                      [
+                        { id: "desktop", label: "Desktop", Icon: Monitor },
+                        { id: "mobile", label: "Mobile", Icon: Smartphone },
+                      ] as const
+                    ).map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setPreview(id)}
+                        aria-pressed={preview === id}
+                        className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-semibold transition ${
+                          preview === id
+                            ? "bg-music text-music-foreground"
+                            : "text-muted-foreground hover:bg-foreground/5"
+                        }`}
+                      >
+                        <Icon className="size-3.5" /> {label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!canUndo}
+                    onClick={() => {
+                      undo();
+                      setMoreOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-foreground/5 disabled:opacity-40"
+                  >
+                    <Undo2 className="size-4" /> Undo
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canRedo}
+                    onClick={() => {
+                      redo();
+                      setMoreOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-foreground/5 disabled:opacity-40"
+                  >
+                    <Redo2 className="size-4" /> Redo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dispatch({ type: "reset" });
+                      setMoreOpen(false);
+                      toast.success("Reset to the demo profile");
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-foreground/5"
+                  >
+                    <RotateCcw className="size-4" /> Reset demo
+                  </button>
                 </PopoverContent>
               </Popover>
             </>

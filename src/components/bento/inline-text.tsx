@@ -8,6 +8,7 @@ interface InlineTextProps {
   multiline?: boolean;
   className?: string;
   ariaLabel?: string;
+  autoFocus?: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ export function InlineText({
   multiline = false,
   className = "",
   ariaLabel,
+  autoFocus = false,
 }: InlineTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const reverting = useRef(false);
@@ -32,6 +34,17 @@ export function InlineText({
     if (document.activeElement === el) return;
     if (el.textContent !== value) el.textContent = value;
   }, [value, editing]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !editing || !autoFocus) return;
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+  }, [autoFocus, editing]);
 
   if (!editing) {
     return <span className={className}>{value}</span>;

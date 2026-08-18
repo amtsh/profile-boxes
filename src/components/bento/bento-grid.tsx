@@ -19,9 +19,9 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import { GripVertical, Image as ImageIcon, Link2, Quote } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
@@ -29,22 +29,19 @@ import { TileControls } from "@/components/bento/tile-controls";
 import { WidgetCard } from "@/components/bento/widget-card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SIZE_CLASSES, type Widget, type WidgetSize } from "@/lib/bento-types";
+import { createWidget, fileToTileDataUrl, newWidgetId } from "@/lib/create-widget";
 
 function SortableTile({
   widget,
   index,
-  compact,
   animate,
   overId,
-  onEdit,
   onDelete,
 }: {
   widget: Widget;
   index: number;
-  compact: boolean;
   animate: boolean;
   overId: string | null;
-  onEdit: (w: Widget) => void;
   onDelete: (w: Widget) => void;
 }) {
   const { editing, selectedId, setSelectedId, dispatch } = useProfileStore();
@@ -52,11 +49,9 @@ function SortableTile({
     id: widget.id,
     disabled: !editing,
   });
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Controls reveal on click/tap on every device.
   const selected = editing && selectedId === widget.id;
-  const showControls = editing && (selected || menuOpen) && !isDragging;
+  const showControls = editing && selected && !isDragging;
   const isDropTarget = overId !== null && widget.id === overId && !isDragging;
   const dragProps = editing ? { ...attributes, ...listeners } : {};
 
@@ -93,6 +88,11 @@ function SortableTile({
         }`}
         {...dragProps}
       >
+        {editing && (
+          <span className="pointer-events-none absolute top-2 left-2 z-10 text-foreground/35 opacity-0 transition group-hover/tile:opacity-100">
+            <GripVertical className="size-4" aria-hidden />
+          </span>
+        )}
         {widget.type === "link" || widget.type === "social" ? (
           editing ? (
             <div className="h-full">
@@ -116,12 +116,8 @@ function SortableTile({
       {editing && !isDragging && (
         <TileControls
           widget={widget}
-          compact={compact}
           visible={showControls}
-          menuOpen={menuOpen}
-          onMenuOpenChange={setMenuOpen}
           onResize={(size: WidgetSize) => dispatch({ type: "resize", id: widget.id, size })}
-          onEdit={() => onEdit(widget)}
           onDelete={() => onDelete(widget)}
         />
       )}
@@ -129,14 +125,90 @@ function SortableTile({
   );
 }
 
-export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
-  const { state, dispatch, editing, setEditing, setSelectedId, preview } = useProfileStore();
+function EmptyState() {
+  const { dispatch, setEditing, setSelectedId, setFocusWidgetId, requestLinkMode } = useProfileStore();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function place(widget: Widget, message: string) {
+    dispatch({ type: "add", widget });
+    setSelectedId(widget.id);
+    setFocusWidgetId(widget.id);
+    setEditing(true);
+    toast.success(message);
+  }
+
+  return (
+    <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-border p-10 text-center">
+      <p className="font-display text-lg font-semibold">Your bento is empty</p>
+      <p className="max-w-xs text-sm text-muted-foreground">
+        Paste a link in the bar below, or add a photo or a note to start.
+      </p>
+      <div className="mt-1 flex flex-wrap justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setEditing(true);
+            requestLinkMode();
+          }}
+          className="inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition duration-200 hover:brightness-105 active:scale-95"
+        >
+          <Link2 className="size-4" aria-hidden /> Add a link
+        </button>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition hover:bg-foreground/5"
+        >
+          <ImageIcon className="size-4" aria-hidden /> Add a photo
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const { widget, message } = createWidget("text");
+            place(widget, message);
+          }}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition hover:bg-foreground/5"
+        >
+          <Quote className="size-4" aria-hidden /> Add a note
+        </button>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (!file) return;
+          void fileToTileDataUrl(file)
+            .then((src) =>
+              place(
+                {
+                  id: newWidgetId(),
+                  type: "image",
+                  size: "lg",
+                  src,
+                  alt: file.name.replace(/\.[^.]+$/, ""),
+                  caption: "",
+                },
+                "Image added to your bento",
+              ),
+            )
+            .catch((err) => toast.error(err instanceof Error ? err.message : "Could not add that image"));
+        }}
+      />
+    </div>
+  );
+}
+
+export function BentoGrid() {
+  const { state, dispatch, editing, setSelectedId, preview, hasDragged, markDragged } =
+    useProfileStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const reduceMotion = useReducedMotion();
-  const compact = preview === "mobile" || isMobile;
-  // dnd-kit owns the transforms while dragging; layout animation runs otherwise.
   const animate = !reduceMotion && activeId === null;
 
   const sensors = useSensors(
@@ -151,6 +223,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
     setActiveId(String(e.active.id));
     setOverId(null);
     setSelectedId(null);
+    markDragged();
   }
 
   function handleOver(e: DragOverEvent) {
@@ -181,66 +254,57 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
   }
 
   if (state.widgets.length === 0) {
-    return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-border p-10 text-center">
-        <p className="font-display text-lg font-semibold">Your bento is empty</p>
-        <p className="max-w-xs text-sm text-muted-foreground">
-          Add a link, a social account, a photo or a note to start building your page.
-        </p>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition duration-200 hover:brightness-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
-        >
-          <Plus className="size-4" aria-hidden /> Start editing
-        </button>
-      </div>
-    );
+    return <EmptyState />;
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      modifiers={[restrictToParentElement]}
-      autoScroll={{ threshold: { x: 0, y: 0.2 } }}
-      onDragStart={handleStart}
-      onDragOver={handleOver}
-      onDragEnd={handleEnd}
-      onDragCancel={() => {
-        setActiveId(null);
-        setOverId(null);
-      }}
-    >
-      <SortableContext items={state.widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
-        <div
-          className={`grid grid-flow-row-dense gap-4 auto-rows-[var(--tile-h)] [&>*]:min-h-0 ${
-            preview === "mobile"
-              ? "grid-cols-2 [--tile-h:150px]"
-              : "grid-cols-2 [--tile-h:150px] md:grid-cols-3 md:[--tile-h:168px] lg:grid-cols-4"
-          }`}
-        >
-          {state.widgets.map((w, i) => (
-            <SortableTile
-              key={w.id}
-              widget={w}
-              index={i}
-              compact={compact}
-              animate={animate}
-              overId={overId}
-              onEdit={onEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      </SortableContext>
-      <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
-        {active ? (
-          <div className="h-full w-full rotate-[1.5deg] scale-[1.04] cursor-grabbing opacity-95 drop-shadow-2xl">
-            <WidgetCard widget={active} editing={false} />
+    <div className="space-y-3">
+      {editing && !hasDragged && state.widgets.length > 1 && (
+        <p className="text-center text-xs font-medium text-muted-foreground">
+          {isMobile ? "Hold a tile, then drag to rearrange" : "Drag tiles to rearrange"}
+        </p>
+      )}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToParentElement]}
+        autoScroll={{ threshold: { x: 0, y: 0.2 } }}
+        onDragStart={handleStart}
+        onDragOver={handleOver}
+        onDragEnd={handleEnd}
+        onDragCancel={() => {
+          setActiveId(null);
+          setOverId(null);
+        }}
+      >
+        <SortableContext items={state.widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
+          <div
+            className={`grid grid-flow-row-dense gap-4 auto-rows-[var(--tile-h)] [&>*]:min-h-0 ${
+              preview === "mobile"
+                ? "grid-cols-2 [--tile-h:150px]"
+                : "grid-cols-2 [--tile-h:150px] md:grid-cols-3 md:[--tile-h:168px] lg:grid-cols-4"
+            }`}
+          >
+            {state.widgets.map((w, i) => (
+              <SortableTile
+                key={w.id}
+                widget={w}
+                index={i}
+                animate={animate}
+                overId={overId}
+                onDelete={handleDelete}
+              />
+            ))}
           </div>
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+        </SortableContext>
+        <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
+          {active ? (
+            <div className="h-full w-full rotate-[1.5deg] scale-[1.04] cursor-grabbing opacity-95 drop-shadow-2xl">
+              <WidgetCard widget={active} editing={false} />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }

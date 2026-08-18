@@ -1,6 +1,7 @@
 import { PLATFORM_META } from "@/components/bento/social-icons";
 import { AVATAR_PRESETS } from "@/data/shakespeare";
 import type { SocialPlatform, Widget } from "@/lib/bento-types";
+import { hostLabel, LONDON, mapImageUrl } from "@/lib/enrich";
 
 const PLATFORM_HOSTS: { match: RegExp; platform: SocialPlatform }[] = [
   { match: /(^|\.)(x|twitter)\.com$/, platform: "x" },
@@ -11,7 +12,25 @@ const PLATFORM_HOSTS: { match: RegExp; platform: SocialPlatform }[] = [
   { match: /(^|\.)substack\.com$/, platform: "substack" },
 ];
 
+const PLATFORM_HOME: Record<SocialPlatform, string> = {
+  x: "https://x.com",
+  github: "https://github.com",
+  instagram: "https://instagram.com",
+  youtube: "https://youtube.com",
+  spotify: "https://open.spotify.com",
+  substack: "https://substack.com",
+};
+
 export const newWidgetId = () => `w-${Math.random().toString(36).slice(2, 9)}`;
+
+export function socialUrl(platform: SocialPlatform, handle: string): string {
+  const slug = handle.replace(/^@/, "").trim();
+  const home = PLATFORM_HOME[platform];
+  if (!slug) return home;
+  if (platform === "youtube") return `${home}/@${slug}`;
+  if (platform === "spotify") return `${home}/user/${slug}`;
+  return `${home}/${slug}`;
+}
 
 /** Turns a pasted value into a social or link tile. Returns null when unparseable. */
 export function widgetFromUrl(value: string): { widget: Widget; message: string } | null {
@@ -37,22 +56,22 @@ export function widgetFromUrl(value: string): { widget: Widget; message: string 
         type: "social",
         size: "sm",
         platform: social.platform,
-        handle: handle ? `@${handle}` : meta.label,
+        handle: handle ? `@${handle.replace(/^@/, "")}` : "",
         url: normalized,
       },
       message: `${meta.label} added to your bento`,
     };
   }
 
-  const name = host.split(".")[0] ?? host;
+  const { title, host: label } = hostLabel(normalized);
   return {
     widget: {
       id: newWidgetId(),
       type: "link",
       size: "wide",
-      title: name.charAt(0).toUpperCase() + name.slice(1),
+      title,
       url: normalized,
-      description: host,
+      description: label,
     },
     message: "Link added to your bento",
   };
@@ -77,7 +96,14 @@ export function createWidget(type: QuickWidgetType): { widget: Widget; message: 
       };
     case "image":
       return {
-        widget: { id: newWidgetId(), type: "image", size: "lg", src: AVATAR_PRESETS[1]!, alt: "New image", caption: "" },
+        widget: {
+          id: newWidgetId(),
+          type: "image",
+          size: "lg",
+          src: AVATAR_PRESETS[1]!,
+          alt: "New image",
+          caption: "",
+        },
         message: "Image tile added",
       };
     case "text":
@@ -86,14 +112,22 @@ export function createWidget(type: QuickWidgetType): { widget: Widget; message: 
           id: newWidgetId(),
           type: "text",
           size: "wide",
-          body: "All the world's a stage.",
-          attribution: "As You Like It",
+          body: "",
+          attribution: "",
         },
         message: "Note added",
       };
     case "map":
       return {
-        widget: { id: newWidgetId(), type: "map", size: "sm", src: AVATAR_PRESETS[3]!, place: "London" },
+        widget: {
+          id: newWidgetId(),
+          type: "map",
+          size: "sm",
+          src: mapImageUrl(LONDON.lat, LONDON.lon),
+          place: "London",
+          lat: LONDON.lat,
+          lon: LONDON.lon,
+        },
         message: "Map tile added",
       };
     case "section":

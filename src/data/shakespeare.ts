@@ -3,6 +3,7 @@ import globe from "@/assets/globe-theatre.jpg";
 import quill from "@/assets/quill-parchment.jpg";
 import mapTile from "@/assets/stratford-map.jpg";
 
+import { STRATFORD, mapImageUrl } from "@/lib/enrich";
 import type { ProfileState } from "@/lib/bento-types";
 
 export const AVATAR_PRESETS = [avatar, quill, globe, mapTile];
@@ -43,7 +44,7 @@ export const shakespeareProfile: ProfileState = {
       description: "36 plays, collected and printed in 1623",
     },
     { id: "w-quill", type: "image", size: "tall", src: quill, alt: "A quill resting on handwritten parchment", caption: "Draft of Act III" },
-    { id: "w-map", type: "map", size: "sm", src: mapTile, place: "Stratford-upon-Avon" },
+    { id: "w-map", type: "map", size: "sm", src: mapImageUrl(STRATFORD.lat, STRATFORD.lon), place: "Stratford-upon-Avon", lat: STRATFORD.lat, lon: STRATFORD.lon },
     { id: "w-spotify", type: "social", size: "sm", platform: "spotify", handle: "Lute & Consort", url: "https://spotify.com/" },
     {
       id: "w-tickets",

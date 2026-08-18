@@ -1,11 +1,5 @@
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { SIZE_LABELS, SIZE_OPTIONS, type Widget, type WidgetSize } from "@/lib/bento-types";
 
 function SizeGlyph({ size }: { size: WidgetSize }) {
@@ -20,32 +14,22 @@ function SizeGlyph({ size }: { size: WidgetSize }) {
 
 export function TileControls({
   widget,
-  compact,
   visible,
-  menuOpen,
-  onMenuOpenChange,
   onResize,
-  onEdit,
   onDelete,
 }: {
   widget: Widget;
-  compact: boolean;
   visible: boolean;
-  menuOpen: boolean;
-  onMenuOpenChange: (open: boolean) => void;
   onResize: (size: WidgetSize) => void;
-  onEdit: () => void;
   onDelete: () => void;
 }) {
   const sizes = SIZE_OPTIONS[widget.type];
 
   return (
     <div
-      className={`glass-panel z-50 flex items-center gap-1 rounded-full p-1.5 text-foreground transition duration-200 ${
-        compact
-          ? "fixed inset-x-0 bottom-24 mx-auto w-fit"
-          : "absolute -bottom-3 left-1/2 -translate-x-1/2 translate-y-full"
-      } ${visible ? "opacity-100" : "pointer-events-none translate-y-[calc(100%-6px)] opacity-0"}`}
+      className={`glass-panel absolute top-2 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full p-1.5 text-foreground transition duration-200 ${
+        visible ? "opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
+      }`}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
@@ -69,26 +53,15 @@ export function TileControls({
 
       {sizes.length > 0 && <span className="mx-0.5 h-5 w-px bg-foreground/15" />}
 
-      <DropdownMenu open={menuOpen} onOpenChange={onMenuOpenChange}>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            aria-label="More options"
-            className="flex size-8 items-center justify-center rounded-full transition-colors duration-200 hover:bg-foreground/10 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
-          >
-            <MoreHorizontal className="size-4" aria-hidden />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center" sideOffset={8} className="glass-panel rounded-2xl">
-          <DropdownMenuItem onSelect={onEdit}>
-            <Pencil className="size-4" /> Edit details
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={onDelete} className="text-destructive focus:text-destructive">
-            <Trash2 className="size-4" /> Delete
-          </DropdownMenuItem>
-
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <button
+        type="button"
+        aria-label="Delete tile"
+        title="Delete"
+        onClick={onDelete}
+        className="flex size-8 items-center justify-center rounded-full text-foreground/70 transition-colors duration-200 hover:bg-foreground/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
+      >
+        <Trash2 className="size-4" aria-hidden />
+      </button>
     </div>
   );
 }

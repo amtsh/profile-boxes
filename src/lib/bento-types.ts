@@ -47,6 +47,8 @@ export interface MapWidget extends BaseWidget {
   type: "map";
   src: string;
   place: string;
+  lat?: number;
+  lon?: number;
 }
 
 export interface SectionWidget extends BaseWidget {

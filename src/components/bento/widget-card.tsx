@@ -1,9 +1,14 @@
-import { ArrowUpRight, MapPin, Quote } from "lucide-react";
+import { ArrowUpRight, ImagePlus, MapPin, Quote } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { InlineText } from "@/components/bento/inline-text";
 import { useProfileStore } from "@/components/bento/profile-store";
 import { PLATFORM_META } from "@/components/bento/social-icons";
-import type { Widget } from "@/lib/bento-types";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import type { SocialPlatform, Widget } from "@/lib/bento-types";
+import { fileToTileDataUrl, socialUrl } from "@/lib/create-widget";
+import { geocodePlace, mapEmbedUrl, mapImageUrl } from "@/lib/enrich";
 
 function faviconFor(url: string) {
   try {
@@ -23,7 +28,8 @@ function hostFor(url: string) {
 }
 
 export function WidgetCard({ widget, editing }: { widget: Widget; editing: boolean }) {
-  const { dispatch } = useProfileStore();
+  const { dispatch, focusWidgetId, setFocusWidgetId } = useProfileStore();
+  const focused = focusWidgetId === widget.id;
   const patch = (p: Partial<Widget>) =>
     dispatch({ type: "update", id: widget.id, patch: p as Partial<Widget> });
 
@@ -37,7 +43,11 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
               value={widget.title}
               placeholder="Section title"
               ariaLabel="Section title"
-              onCommit={(title) => patch({ title } as Partial<Widget>)}
+              autoFocus={focused}
+              onCommit={(title) => {
+                patch({ title } as Partial<Widget>);
+                setFocusWidgetId(null);
+              }}
             />
           </h2>
         </div>
@@ -48,9 +58,16 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
       const isSmall = widget.size === "sm";
       return (
         <div className="tile-surface tile-hover flex h-full flex-col justify-between overflow-hidden p-4">
-          <div className={`flex size-10 items-center justify-center rounded-xl ${meta.tint}`}>
-            <meta.Icon className="size-5" />
-          </div>
+          <PlatformPicker
+            editing={editing}
+            platform={widget.platform}
+            onPick={(platform) =>
+              patch({
+                platform,
+                url: socialUrl(platform, widget.handle),
+              } as Partial<Widget>)
+            }
+          />
           <div className="min-w-0">
             <p className="truncate font-display text-sm font-semibold">{meta.label}</p>
             <p className="truncate text-xs text-muted-foreground">
@@ -59,7 +76,12 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
                 value={widget.handle}
                 placeholder="@handle"
                 ariaLabel="Handle"
-                onCommit={(handle) => patch({ handle } as Partial<Widget>)}
+                autoFocus={focused}
+                onCommit={(handle) => {
+                  const next = handle.startsWith("@") || !handle ? handle : `@${handle}`;
+                  patch({ handle: next, url: socialUrl(widget.platform, next) } as Partial<Widget>);
+                  setFocusWidgetId(null);
+                }}
               />
             </p>
           </div>
@@ -117,9 +139,26 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
                 />
               </p>
             )}
-            <p className="mt-1 truncate text-[11px] tracking-wide text-muted-foreground/70">
-              {hostFor(widget.url)}
-            </p>
+            {editing ? (
+              <p className="mt-1 truncate text-[11px] tracking-wide text-muted-foreground/70">
+                <InlineText
+                  editing
+                  value={widget.url}
+                  placeholder="https://"
+                  ariaLabel="Link URL"
+                  autoFocus={focused}
+                  onCommit={(url) => {
+                    const normalized = /^https?:\/\//.test(url) ? url : `https://${url}`;
+                    patch({ url: normalized } as Partial<Widget>);
+                    setFocusWidgetId(null);
+                  }}
+                />
+              </p>
+            ) : (
+              <p className="mt-1 truncate text-[11px] tracking-wide text-muted-foreground/70">
+                {hostFor(widget.url)}
+              </p>
+            )}
           </div>
         </div>
       );
@@ -136,6 +175,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             draggable={false}
             className="size-full object-cover"
           />
+          {editing && <ReplaceImageButton onReplace={(src, alt) => patch({ src, alt } as Partial<Widget>)} />}
           {(editing || widget.caption) && (
             <div
               className={`glass-chip absolute inset-x-3 bottom-3 flex items-center rounded-full px-3 py-1.5 ${
@@ -167,7 +207,11 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
               multiline
               placeholder="Write a note"
               ariaLabel="Note"
-              onCommit={(body) => patch({ body } as Partial<Widget>)}
+              autoFocus={focused}
+              onCommit={(body) => {
+                patch({ body } as Partial<Widget>);
+                setFocusWidgetId(null);
+              }}
             />
           </p>
           {(editing || widget.attribution) && (
@@ -186,28 +230,180 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
 
     case "map":
       return (
-        <div className="tile-surface tile-hover relative h-full overflow-hidden">
-          <img
-            src={widget.src}
-            alt={`Map of ${widget.place}`}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-            className="size-full object-cover"
-          />
-          <div className="glass-chip absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-full px-3 py-1.5">
-            <MapPin className="size-3.5 shrink-0" aria-hidden />
-            <span className="truncate text-xs font-medium">
-              <InlineText
-                editing={editing}
-                value={widget.place}
-                placeholder="Place"
-                ariaLabel="Place"
-                onCommit={(place) => patch({ place } as Partial<Widget>)}
-              />
-            </span>
-          </div>
-        </div>
+        <MapTile
+          widget={widget}
+          editing={editing}
+          focused={focused}
+          onPatch={patch}
+          onFocused={() => setFocusWidgetId(null)}
+        />
       );
   }
+}
+
+function PlatformPicker({
+  editing,
+  platform,
+  onPick,
+}: {
+  editing: boolean;
+  platform: SocialPlatform;
+  onPick: (p: SocialPlatform) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const meta = PLATFORM_META[platform];
+  const icon = (
+    <div className={`flex size-10 items-center justify-center rounded-xl ${meta.tint}`}>
+      <meta.Icon className="size-5" />
+    </div>
+  );
+
+  if (!editing) return icon;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          title="Change platform"
+          aria-label="Change platform"
+          className="w-fit rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-music"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {icon}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        sideOffset={8}
+        className="glass-panel w-auto rounded-2xl border-0 bg-background/80 p-2"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-wrap gap-1">
+          {(Object.keys(PLATFORM_META) as SocialPlatform[]).map((p) => {
+            const item = PLATFORM_META[p];
+            return (
+              <button
+                key={p}
+                type="button"
+                title={item.label}
+                aria-label={item.label}
+                onClick={() => {
+                  onPick(p);
+                  setOpen(false);
+                }}
+                className={`flex size-9 items-center justify-center rounded-xl transition ${
+                  p === platform ? "ring-2 ring-music" : "hover:bg-foreground/5"
+                } ${item.tint}`}
+              >
+                <item.Icon className="size-4" />
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function ReplaceImageButton({ onReplace }: { onReplace: (src: string, alt: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <button
+        type="button"
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          ref.current?.click();
+        }}
+        className="glass-chip absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100"
+      >
+        <ImagePlus className="size-3.5" aria-hidden />
+        Replace
+      </button>
+      <input
+        ref={ref}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (!file) return;
+          void fileToTileDataUrl(file)
+            .then((src) => onReplace(src, file.name.replace(/\.[^.]+$/, "")))
+            .catch((err) => toast.error(err instanceof Error ? err.message : "Could not use that image"));
+        }}
+      />
+    </>
+  );
+}
+
+function MapTile({
+  widget,
+  editing,
+  focused,
+  onPatch,
+  onFocused,
+}: {
+  widget: Extract<Widget, { type: "map" }>;
+  editing: boolean;
+  focused: boolean;
+  onPatch: (p: Partial<Widget>) => void;
+  onFocused: () => void;
+}) {
+  const hasCoords = Number.isFinite(widget.lat) && Number.isFinite(widget.lon);
+
+  async function commitPlace(place: string) {
+    onFocused();
+    const hit = await geocodePlace(place);
+    if (!hit) {
+      onPatch({ place } as Partial<Widget>);
+      toast.error("Couldn't find that place");
+      return;
+    }
+    onPatch({
+      place,
+      lat: hit.lat,
+      lon: hit.lon,
+      src: mapImageUrl(hit.lat, hit.lon),
+    } as Partial<Widget>);
+  }
+
+  return (
+    <div className="tile-surface tile-hover relative h-full overflow-hidden">
+      {hasCoords ? (
+        <iframe
+          title={`Map of ${widget.place}`}
+          src={mapEmbedUrl(widget.lat!, widget.lon!)}
+          className="pointer-events-none size-full border-0"
+          loading="lazy"
+        />
+      ) : (
+        <img
+          src={widget.src}
+          alt={`Map of ${widget.place}`}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="size-full object-cover"
+        />
+      )}
+      <div className="glass-chip absolute inset-x-3 bottom-3 z-10 flex items-center gap-1.5 rounded-full px-3 py-1.5">
+        <MapPin className="size-3.5 shrink-0" aria-hidden />
+        <span className="truncate text-xs font-medium">
+          <InlineText
+            editing={editing}
+            value={widget.place}
+            placeholder="Place"
+            ariaLabel="Place"
+            autoFocus={focused}
+            onCommit={(place) => void commitPlace(place)}
+          />
+        </span>
+      </div>
+    </div>
+  );
 }
