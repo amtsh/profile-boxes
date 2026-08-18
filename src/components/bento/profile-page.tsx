@@ -38,7 +38,7 @@ export function ProfilePage() {
       </main>
 
 
-      <p className="fixed bottom-5 left-5 hidden text-xs font-medium text-muted-foreground lg:block">
+      <p className="pointer-events-none fixed bottom-5 left-5 hidden text-xs font-medium text-muted-foreground/80 select-none lg:block">
         Made with Bento
       </p>
 

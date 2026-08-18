@@ -57,8 +57,10 @@ export function TileControls({
           aria-pressed={widget.size === size}
           title={SIZE_LABELS[size]}
           onClick={() => onResize(size)}
-          className={`flex size-8 items-center justify-center rounded-full transition ${
-            widget.size === size ? "bg-music text-music-foreground" : "hover:bg-foreground/10"
+          className={`flex size-8 items-center justify-center rounded-full transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none ${
+            widget.size === size
+              ? "bg-music text-music-foreground shadow-sm"
+              : "text-foreground/70 hover:bg-foreground/10 hover:text-foreground"
           }`}
         >
           <SizeGlyph size={size} />
@@ -72,9 +74,9 @@ export function TileControls({
           <button
             type="button"
             aria-label="More options"
-            className="flex size-8 items-center justify-center rounded-full transition hover:bg-foreground/10"
+            className="flex size-8 items-center justify-center rounded-full transition-colors duration-200 hover:bg-foreground/10 focus-visible:ring-2 focus-visible:ring-music focus-visible:outline-none"
           >
-            <MoreHorizontal className="size-4" />
+            <MoreHorizontal className="size-4" aria-hidden />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" sideOffset={8} className="glass-panel rounded-2xl">

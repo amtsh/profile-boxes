@@ -77,7 +77,7 @@ function SortableTile({
       onClick={() => editing && setSelectedId(selected ? null : widget.id)}
     >
       {isDragging && (
-        <div className="absolute inset-0 z-50 rounded-[1.5rem] border-2 border-dashed border-music/70 bg-foreground/[0.03]" />
+        <div className="absolute inset-0 z-50 rounded-[1.5rem] border-2 border-dashed border-music/60 bg-foreground/[0.04]" />
       )}
       <div
         className={`group/tile h-full ${isDragging ? "opacity-0" : ""} ${
@@ -179,9 +179,9 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition hover:brightness-105 active:scale-95"
+          className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-music px-4 py-2 text-sm font-semibold text-music-foreground transition duration-200 hover:brightness-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
         >
-          <Plus className="size-4" /> Start editing
+          <Plus className="size-4" aria-hidden /> Start editing
         </button>
       </div>
     );
@@ -220,7 +220,7 @@ export function BentoGrid({ onEdit }: { onEdit: (w: Widget) => void }) {
       </SortableContext>
       <DragOverlay dropAnimation={{ duration: 220, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
         {active ? (
-          <div className="h-full w-full rotate-1 scale-[1.05] opacity-95 drop-shadow-2xl">
+          <div className="h-full w-full rotate-[1.5deg] scale-[1.04] cursor-grabbing opacity-95 drop-shadow-2xl">
             <WidgetCard widget={active} editing={false} />
           </div>
         ) : null}

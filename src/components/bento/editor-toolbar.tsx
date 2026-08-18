@@ -103,7 +103,7 @@ export function EditorToolbar() {
   return (
     <>
       {showPill && (
-      <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0">
+      <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0 md:safe-bottom">
         <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
           {mode === "link" ? (
             <div className="flex min-w-0 shrink-0 items-center gap-1 pl-2">
@@ -121,6 +121,9 @@ export function EditorToolbar() {
                     if (e.key === "Escape") closeLinkRow();
                   }}
                   placeholder="Paste a link…"
+                  inputMode="url"
+                  autoComplete="off"
+                  spellCheck={false}
                   aria-label="Link URL"
                   className="w-56 max-w-[45vw] bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
                 />
@@ -138,7 +141,7 @@ export function EditorToolbar() {
                 type="button"
                 onClick={closeLinkRow}
                 aria-label="Cancel adding link"
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-foreground/5 active:scale-95"
+                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
               >
                 <X className="size-4" />
               </button>
@@ -164,7 +167,7 @@ export function EditorToolbar() {
                   title={label}
                   className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
                     preview === id
-                      ? "bg-music text-music-foreground shadow-sm"
+                      ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
                       : "text-muted-foreground hover:bg-foreground/5"
                   }`}
                 >
@@ -184,7 +187,7 @@ export function EditorToolbar() {
                 title={label}
                 aria-label={label}
                 onClick={run}
-                className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition hover:bg-foreground/5 active:scale-95"
+                className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
               >
                 <Icon className="size-[18px]" />
               </button>
@@ -199,7 +202,8 @@ export function EditorToolbar() {
                 type="button"
                 title={`${activeTheme.label} theme`}
                 aria-label={`Theme: ${activeTheme.label}. Choose another color`}
-                className="flex size-10 shrink-0 items-center justify-center rounded-2xl transition hover:bg-foreground/5 active:scale-95"
+                aria-expanded={colorsOpen}
+                className="flex size-10 shrink-0 items-center justify-center rounded-2xl transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
               >
                 <span
                   className="size-6 rounded-full border border-border shadow-inner ring-2 ring-music ring-offset-1 ring-offset-transparent"
@@ -258,15 +262,15 @@ export function EditorToolbar() {
 
 
 
-      <div className="fixed right-5 bottom-5 z-50 flex items-center gap-2">
+      <div className="fixed right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setEditing(!editing)}
           aria-pressed={editing}
           aria-label={editing ? "Done editing" : "Edit"}
-          className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition hover:brightness-105"
+          className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition duration-200 hover:brightness-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          {editing ? <Check className="size-4" /> : <Pencil className="size-4" />}
+          {editing ? <Check className="size-4" aria-hidden /> : <Pencil className="size-4" aria-hidden />}
           {editing ? "Done" : "Edit"}
         </button>
 
@@ -274,9 +278,9 @@ export function EditorToolbar() {
           type="button"
           onClick={() => setAddOpen(true)}
           aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_8px_24px_color-mix(in_oklab,var(--music)_40%,transparent)] ring-1 ring-[oklch(1_0_0/0.25)] transition hover:scale-105 active:scale-95"
+          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_8px_24px_color-mix(in_oklab,var(--music)_40%,transparent)] ring-1 ring-[oklch(1_0_0/0.25)] transition duration-200 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <Plus className="size-6" />
+          <Plus className="size-6" aria-hidden />
         </button>
       </div>
 
