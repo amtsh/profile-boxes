@@ -1,5 +1,4 @@
 import {
-  AtSign,
   Check,
   Image as ImageIcon,
   LayoutTemplate,
@@ -19,10 +18,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
-import { PLATFORM_META } from "@/components/bento/social-icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { THEME_OPTIONS, type SocialPlatform, type Widget } from "@/lib/bento-types";
-import { createWidget, fileToTileDataUrl, newWidgetId, socialUrl, widgetFromUrl } from "@/lib/create-widget";
+import { THEME_OPTIONS, type Widget } from "@/lib/bento-types";
+import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
 import { unfurlLink } from "@/lib/enrich";
 
 export function EditorToolbar() {
@@ -46,7 +44,6 @@ export function EditorToolbar() {
   const [linkError, setLinkError] = useState("");
   const [busy, setBusy] = useState(false);
   const [colorsOpen, setColorsOpen] = useState(false);
-  const [socialsOpen, setSocialsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -114,23 +111,6 @@ export function EditorToolbar() {
   function quickAdd(type: "text" | "section" | "map") {
     const { widget, message } = createWidget(type);
     place(widget, message, type !== "map");
-  }
-
-  function addSocial(platform: SocialPlatform) {
-    const meta = PLATFORM_META[platform];
-    place(
-      {
-        id: newWidgetId(),
-        type: "social",
-        size: "sm",
-        platform,
-        handle: "",
-        url: socialUrl(platform, ""),
-      },
-      `${meta.label} added — type your handle`,
-      true,
-    );
-    setSocialsOpen(false);
   }
 
   const SHORTCUTS = [
@@ -220,47 +200,6 @@ export function EditorToolbar() {
                     <Icon className="size-[18px]" />
                   </button>
                 ))}
-
-                <Popover open={socialsOpen} onOpenChange={setSocialsOpen}>
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      title="Add social"
-                      aria-label="Add social"
-                      aria-expanded={socialsOpen}
-                      className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
-                    >
-                      <AtSign className="size-[18px]" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="center"
-                    sideOffset={12}
-                    className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
-                  >
-                    <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Socials</p>
-                    <div className="grid grid-cols-2 gap-1">
-                      {(Object.keys(PLATFORM_META) as SocialPlatform[]).map((platform) => {
-                        const meta = PLATFORM_META[platform];
-                        return (
-                          <button
-                            key={platform}
-                            type="button"
-                            onClick={() => addSocial(platform)}
-                            className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition hover:bg-foreground/5"
-                          >
-                            <span
-                              className={`flex size-7 items-center justify-center rounded-full ${meta.tint}`}
-                            >
-                              <meta.Icon className="size-3.5" />
-                            </span>
-                            {meta.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </PopoverContent>
-                </Popover>
               </div>
 
               <span className="mx-1 h-6 w-px shrink-0 bg-border" />

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { useProfileStore } from "@/components/bento/profile-store";
+import { SocialRail } from "@/components/bento/social-rail";
 import { AVATAR_PRESETS } from "@/data/shakespeare";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { fileToTileDataUrl } from "@/lib/create-widget";
@@ -186,6 +187,10 @@ export function ProfileRail() {
             </button>
           )}
         </div>
+
+        <div className="mt-4">
+          <SocialRail />
+        </div>
       </aside>
     );
   }
@@ -236,6 +241,8 @@ export function ProfileRail() {
             />
           </p>
         </div>
+
+        <SocialRail />
       </div>
     </aside>
   );

@@ -17,10 +17,10 @@ export const shakespeareProfile: ProfileState = {
     location: "Stratford-upon-Avon, England",
     avatar,
     socials: [
+      { platform: "spotify", url: "https://open.spotify.com/" },
+      { platform: "youtube", url: "https://youtube.com/" },
       { platform: "x", url: "https://x.com/" },
       { platform: "instagram", url: "https://instagram.com/" },
-      { platform: "youtube", url: "https://youtube.com/" },
-      { platform: "substack", url: "https://substack.com/" },
     ],
   },
   widgets: [
