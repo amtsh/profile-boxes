@@ -65,7 +65,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
           </div>
           {!isSmall && (
             <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium">
-              Follow <ArrowUpRight className="size-3" />
+              Follow <ArrowUpRight className="size-3" aria-hidden />
             </span>
           )}
         </div>
@@ -84,12 +84,17 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
                 width={40}
                 height={40}
                 loading="lazy"
+                decoding="async"
+                draggable={false}
+                onError={(e) => {
+                  e.currentTarget.style.visibility = "hidden";
+                }}
                 className="size-10 rounded-xl bg-muted object-contain p-1.5"
               />
             ) : (
               <div className="size-10 rounded-xl bg-muted" />
             )}
-            <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/70" />
+            <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/60" aria-hidden />
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm font-semibold">
@@ -112,7 +117,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
                 />
               </p>
             )}
-            <p className="mt-1 truncate text-[11px] text-muted-foreground/70">
+            <p className="mt-1 truncate text-[11px] tracking-wide text-muted-foreground/70">
               {hostFor(widget.url)}
             </p>
           </div>
@@ -127,6 +132,8 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             src={widget.src}
             alt={widget.alt}
             loading="lazy"
+            decoding="async"
+            draggable={false}
             className="size-full object-cover"
           />
           {(editing || widget.caption) && (
@@ -152,7 +159,7 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
     case "text":
       return (
         <div className="tile-surface tile-hover flex h-full flex-col justify-between gap-3 overflow-hidden p-5">
-          <Quote className="size-5 shrink-0 text-muted-foreground/50" />
+          <Quote className="size-5 shrink-0 text-muted-foreground/50" aria-hidden />
           <p className="font-display text-base leading-snug font-medium text-balance">
             <InlineText
               editing={editing}
@@ -184,10 +191,12 @@ export function WidgetCard({ widget, editing }: { widget: Widget; editing: boole
             src={widget.src}
             alt={`Map of ${widget.place}`}
             loading="lazy"
+            decoding="async"
+            draggable={false}
             className="size-full object-cover"
           />
           <div className="glass-chip absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-full px-3 py-1.5">
-            <MapPin className="size-3.5 shrink-0" />
+            <MapPin className="size-3.5 shrink-0" aria-hidden />
             <span className="truncate text-xs font-medium">
               <InlineText
                 editing={editing}
