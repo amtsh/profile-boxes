@@ -8,6 +8,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { restrictToParentElement } from "@dnd-kit/modifiers";
@@ -34,6 +35,7 @@ function SortableTile({
   index,
   compact,
   animate,
+  overId,
   onEdit,
   onDelete,
 }: {
@@ -41,6 +43,7 @@ function SortableTile({
   index: number;
   compact: boolean;
   animate: boolean;
+  overId: string | null;
   onEdit: (w: Widget) => void;
   onDelete: (w: Widget) => void;
 }) {
