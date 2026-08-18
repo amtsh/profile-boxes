@@ -107,7 +107,9 @@ export function ProfileRail() {
               alt={profile.name}
               width={80}
               height={80}
+              draggable={false}
               className="size-20 rounded-full object-cover shadow-[var(--tile-shadow)] ring-2 ring-[var(--glass-border)]"
+
             />
             {editing && <AvatarPresets />}
           </div>
