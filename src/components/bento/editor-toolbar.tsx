@@ -9,7 +9,6 @@ import {
   Pencil,
   Quote,
   Redo2,
-  RotateCcw,
   Smartphone,
   Undo2,
   X,
@@ -309,17 +308,6 @@ export function EditorToolbar() {
                     className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-foreground/5 disabled:opacity-40"
                   >
                     <Redo2 className="size-4" /> Redo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      dispatch({ type: "reset" });
-                      setMoreOpen(false);
-                      toast.success("Reset to the demo profile");
-                    }}
-                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-foreground/5"
-                  >
-                    <RotateCcw className="size-4" /> Reset demo
                   </button>
                 </PopoverContent>
               </Popover>

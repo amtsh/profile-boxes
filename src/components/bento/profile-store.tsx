@@ -16,6 +16,25 @@ import type { Profile, ProfileState, ThemeId, Widget, WidgetSize } from "@/lib/b
 const STORAGE_KEY = "bento-profile-v1";
 const DRAG_HINT_KEY = "bento-dragged";
 const HISTORY_LIMIT = 50;
+const DARK_THEMES = new Set<ThemeId>(["dark", "midnight", "forest"]);
+
+function applyDocumentTheme(theme: ThemeId) {
+  const root = document.documentElement;
+  for (const cls of [...root.classList]) {
+    if (cls.startsWith("bento-theme-")) root.classList.remove(cls);
+  }
+  root.classList.add(`bento-theme-${theme}`);
+  root.style.colorScheme = DARK_THEMES.has(theme) ? "dark" : "light";
+
+  const bg = getComputedStyle(root).getPropertyValue("--background").trim();
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    document.head.appendChild(meta);
+  }
+  if (bg) meta.content = bg;
+}
 
 type Action =
   | { type: "hydrate"; state: ProfileState }
@@ -128,6 +147,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       /* storage full or unavailable */
     }
   }, [state, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    applyDocumentTheme(state.theme);
+  }, [hydrated, state.theme]);
 
   const dispatch = useCallback((action: Action) => {
     if (action.type !== "hydrate" && action.type !== "restore") {

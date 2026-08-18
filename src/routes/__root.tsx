@@ -87,6 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "theme-color", content: "oklch(0.975 0.005 95)" },
     ],
     links: [
       {
@@ -114,6 +115,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=JSON.parse(localStorage.getItem("bento-profile-v1")||"{}");var t=s.theme;if(typeof t==="string"){document.documentElement.classList.add("bento-theme-"+t);if(t==="dark"||t==="midnight"||t==="forest")document.documentElement.style.colorScheme="dark"}}catch(e){}})();`,
+          }}
+        />
       </head>
       <body>
         {children}
