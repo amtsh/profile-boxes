@@ -449,6 +449,12 @@
   }
 }
 
+@utility safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+
+
 
 
 @keyframes tile-in {
