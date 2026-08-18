@@ -43,7 +43,7 @@ export function TileControls({
     <div
       className={`glass-panel z-50 flex items-center gap-1 rounded-full p-1.5 text-foreground transition duration-200 ${
         compact
-          ? "fixed inset-x-0 bottom-40 mx-auto w-fit"
+          ? "fixed inset-x-0 bottom-24 mx-auto w-fit"
           : "absolute -bottom-3 left-1/2 -translate-x-1/2 translate-y-full"
       } ${visible ? "opacity-100" : "pointer-events-none translate-y-[calc(100%-6px)] opacity-0"}`}
       onPointerDown={(e) => e.stopPropagation()}

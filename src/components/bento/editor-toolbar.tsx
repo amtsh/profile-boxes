@@ -1,10 +1,11 @@
 import {
+  AtSign,
   Check,
   Image as ImageIcon,
   LayoutTemplate,
   Link2,
+  MapPin,
   Monitor,
-  Plus,
   Pencil,
   Quote,
   Smartphone,
@@ -13,43 +14,25 @@ import {
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { AddWidgetPanel } from "@/components/bento/add-widget-panel";
 import { useProfileStore } from "@/components/bento/profile-store";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+import { PLATFORM_META } from "@/components/bento/social-icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { THEME_OPTIONS, type Widget } from "@/lib/bento-types";
+import { THEME_OPTIONS, type SocialPlatform, type Widget } from "@/lib/bento-types";
 import { createWidget, fileToTileDataUrl, newWidgetId, widgetFromUrl } from "@/lib/create-widget";
 
 export function EditorToolbar() {
   const { state, dispatch, editing, setEditing, preview, setPreview, setSelectedId } =
     useProfileStore();
-  const [addOpen, setAddOpen] = useState(false);
   const [mode, setMode] = useState<"default" | "link">("default");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
   const [colorsOpen, setColorsOpen] = useState(false);
+  const [socialsOpen, setSocialsOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
-  const panel = <AddWidgetPanel onDone={() => setAddOpen(false)} />;
-
-  const showPill = !isMobile || editing;
   const activeTheme = THEME_OPTIONS.find((t) => t.id === state.theme) ?? THEME_OPTIONS[0]!;
-
 
   function place(widget: Widget, message: string) {
     dispatch({ type: "add", widget });
@@ -79,7 +62,14 @@ export function EditorToolbar() {
     try {
       const src = await fileToTileDataUrl(file);
       place(
-        { id: newWidgetId(), type: "image", size: "lg", src, alt: file.name.replace(/\.[^.]+$/, ""), caption: "" },
+        {
+          id: newWidgetId(),
+          type: "image",
+          size: "lg",
+          src,
+          alt: file.name.replace(/\.[^.]+$/, ""),
+          caption: "",
+        },
         "Image added to your bento",
       );
     } catch (err) {
@@ -87,26 +77,57 @@ export function EditorToolbar() {
     }
   }
 
-  function quickAdd(type: "text" | "section") {
+  function quickAdd(type: "text" | "section" | "map") {
     const { widget, message } = createWidget(type);
     place(widget, message);
+  }
+
+  function addSocial(platform: SocialPlatform) {
+    const meta = PLATFORM_META[platform];
+    place(
+      {
+        id: newWidgetId(),
+        type: "social",
+        size: "sm",
+        platform,
+        handle: meta.label,
+        url: `https://${platform === "x" ? "x.com" : `${platform}.com`}`,
+      },
+      `${meta.label} added — tap the tile to set your handle`,
+    );
+    setSocialsOpen(false);
   }
 
   const SHORTCUTS = [
     { id: "link", label: "Add link", Icon: Link2, run: () => setMode("link") },
     { id: "image", label: "Add image", Icon: ImageIcon, run: () => fileRef.current?.click() },
     { id: "quote", label: "Add quote", Icon: Quote, run: () => quickAdd("text") },
+    { id: "map", label: "Add map", Icon: MapPin, run: () => quickAdd("map") },
     { id: "section", label: "Add section", Icon: LayoutTemplate, run: () => quickAdd("section") },
   ] as const;
 
-
   return (
     <>
-      {showPill && (
-      <div className="pointer-events-none fixed inset-x-0 bottom-20 z-50 flex justify-center p-4 md:bottom-0 md:safe-bottom">
-        <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar md:max-w-[calc(100vw-6rem)]">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 safe-bottom">
+        <div className="glass-panel pointer-events-auto flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-full p-1.5 no-scrollbar">
+          <button
+            type="button"
+            onClick={() => setEditing(!editing)}
+            aria-pressed={editing}
+            aria-label={editing ? "Done editing" : "Edit"}
+            className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold whitespace-nowrap transition ${
+              editing
+                ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
+                : "text-foreground/80 hover:bg-foreground/5"
+            }`}
+          >
+            {editing ? <Check className="size-4" aria-hidden /> : <Pencil className="size-4" aria-hidden />}
+            {editing ? "Done" : "Edit"}
+          </button>
+
           {mode === "link" ? (
-            <div className="flex min-w-0 shrink-0 items-center gap-1 pl-2">
+            <div className="flex min-w-0 shrink-0 items-center gap-1">
+              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
               <Link2 className="size-4 shrink-0 text-muted-foreground" />
               <div className="flex min-w-0 flex-col">
                 <input
@@ -148,105 +169,144 @@ export function EditorToolbar() {
             </div>
           ) : (
             <>
-          {!isMobile && (
+              {!isMobile && (
+                <>
+                  <span className="mx-1 h-6 w-px shrink-0 bg-border" />
+                  <div className="flex shrink-0 items-center gap-1">
+                    {(
+                      [
+                        { id: "desktop", label: "Desktop", Icon: Monitor },
+                        { id: "mobile", label: "Mobile", Icon: Smartphone },
+                      ] as const
+                    ).map(({ id, label, Icon }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setPreview(id)}
+                        aria-pressed={preview === id}
+                        aria-label={label}
+                        title={label}
+                        className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
+                          preview === id
+                            ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
+                            : "text-muted-foreground hover:bg-foreground/5"
+                        }`}
+                      >
+                        <Icon className="size-4" /> {preview === id ? null : label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
 
+              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
 
-            <div className="flex shrink-0 items-center gap-1">
-              {(
-                [
-                  { id: "desktop", label: "Desktop", Icon: Monitor },
-                  { id: "mobile", label: "Mobile", Icon: Smartphone },
-                ] as const
-              ).map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setPreview(id)}
-                  aria-pressed={preview === id}
-                  aria-label={label}
-                  title={label}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
-                    preview === id
-                      ? "bg-music text-music-foreground shadow-sm ring-1 ring-[oklch(1_0_0/0.18)]"
-                      : "text-muted-foreground hover:bg-foreground/5"
-                  }`}
-                >
-                  <Icon className="size-4" /> {preview === id ? null : label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {!isMobile && <span className="mx-1 h-6 w-px shrink-0 bg-border" />}
-
-          <div className="flex shrink-0 items-center gap-1">
-            {SHORTCUTS.map(({ id, label, Icon, run }) => (
-              <button
-                key={id}
-                type="button"
-                title={label}
-                aria-label={label}
-                onClick={run}
-                className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
-              >
-                <Icon className="size-[18px]" />
-              </button>
-            ))}
-          </div>
-
-          <span className="mx-1 h-6 w-px shrink-0 bg-border" />
-
-          <Popover open={colorsOpen} onOpenChange={setColorsOpen}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                title={`${activeTheme.label} theme`}
-                aria-label={`Theme: ${activeTheme.label}. Choose another color`}
-                aria-expanded={colorsOpen}
-                className="flex size-10 shrink-0 items-center justify-center rounded-2xl transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
-              >
-                <span
-                  className="size-6 rounded-full border border-border shadow-inner ring-2 ring-music ring-offset-1 ring-offset-transparent"
-                  style={{ background: activeTheme.swatch }}
-                />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              sideOffset={12}
-              className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
-            >
-              <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Profile color</p>
-              <div className="grid grid-cols-5 gap-2">
-                {THEME_OPTIONS.map((t) => (
+              <div className="flex shrink-0 items-center gap-1">
+                {SHORTCUTS.map(({ id, label, Icon, run }) => (
                   <button
-                    key={t.id}
+                    key={id}
                     type="button"
-                    title={t.label}
-                    aria-label={`${t.label} theme`}
-                    aria-pressed={state.theme === t.id}
-                    onClick={() => {
-                      dispatch({ type: "theme", theme: t.id });
-                      setColorsOpen(false);
-                    }}
-                    className={`size-8 rounded-full border border-border shadow-inner transition hover:scale-110 active:scale-95 ${
-                      state.theme === t.id
-                        ? "ring-2 ring-music ring-offset-2 ring-offset-transparent"
-                        : ""
-                    }`}
-                    style={{ background: t.swatch }}
-                  />
+                    title={label}
+                    aria-label={label}
+                    onClick={run}
+                    className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
+                  >
+                    <Icon className="size-[18px]" />
+                  </button>
                 ))}
-              </div>
-            </PopoverContent>
-          </Popover>
 
+                <Popover open={socialsOpen} onOpenChange={setSocialsOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      title="Add social"
+                      aria-label="Add social"
+                      aria-expanded={socialsOpen}
+                      className="flex size-10 items-center justify-center rounded-2xl text-foreground/80 transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
+                    >
+                      <AtSign className="size-[18px]" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="center"
+                    sideOffset={12}
+                    className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+                  >
+                    <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Socials</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {(Object.keys(PLATFORM_META) as SocialPlatform[]).map((platform) => {
+                        const meta = PLATFORM_META[platform];
+                        return (
+                          <button
+                            key={platform}
+                            type="button"
+                            onClick={() => addSocial(platform)}
+                            className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition hover:bg-foreground/5"
+                          >
+                            <span
+                              className={`flex size-7 items-center justify-center rounded-full ${meta.tint}`}
+                            >
+                              <meta.Icon className="size-3.5" />
+                            </span>
+                            {meta.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <span className="mx-1 h-6 w-px shrink-0 bg-border" />
+
+              <Popover open={colorsOpen} onOpenChange={setColorsOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    title={`${activeTheme.label} theme`}
+                    aria-label={`Theme: ${activeTheme.label}. Choose another color`}
+                    aria-expanded={colorsOpen}
+                    className="flex size-10 shrink-0 items-center justify-center rounded-2xl transition-colors duration-200 hover:bg-foreground/5 active:scale-95"
+                  >
+                    <span
+                      className="size-6 rounded-full border border-border shadow-inner ring-2 ring-music ring-offset-1 ring-offset-transparent"
+                      style={{ background: activeTheme.swatch }}
+                    />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={12}
+                  className={`bento-theme-${state.theme} glass-panel w-auto rounded-2xl border-0 bg-background/80 p-3 text-foreground`}
+                >
+                  <p className="px-1 pb-2 text-xs font-medium text-muted-foreground">Profile color</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {THEME_OPTIONS.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        title={t.label}
+                        aria-label={`${t.label} theme`}
+                        aria-pressed={state.theme === t.id}
+                        onClick={() => {
+                          dispatch({ type: "theme", theme: t.id });
+                          setColorsOpen(false);
+                        }}
+                        className={`size-8 rounded-full border border-border shadow-inner transition hover:scale-110 active:scale-95 ${
+                          state.theme === t.id
+                            ? "ring-2 ring-music ring-offset-2 ring-offset-transparent"
+                            : ""
+                        }`}
+                        style={{ background: t.swatch }}
+                      />
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </>
           )}
         </div>
-
       </div>
-      )}
 
       <input
         ref={fileRef}
@@ -258,58 +318,6 @@ export function EditorToolbar() {
           e.target.value = "";
         }}
       />
-
-
-
-
-      <div className="fixed right-5 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setEditing(!editing)}
-          aria-pressed={editing}
-          aria-label={editing ? "Done editing" : "Edit"}
-          className="glass-panel flex items-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold whitespace-nowrap text-foreground transition duration-200 hover:brightness-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          {editing ? <Check className="size-4" aria-hidden /> : <Pencil className="size-4" aria-hidden />}
-          {editing ? "Done" : "Edit"}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setAddOpen(true)}
-          aria-label="Add to Bento"
-          className="flex size-14 items-center justify-center rounded-full bg-music text-music-foreground shadow-[0_8px_24px_color-mix(in_oklab,var(--music)_40%,transparent)] ring-1 ring-[oklch(1_0_0/0.25)] transition duration-200 hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-music focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          <Plus className="size-6" aria-hidden />
-        </button>
-      </div>
-
-
-      {isMobile ? (
-        <Drawer open={addOpen} onOpenChange={setAddOpen}>
-          <DrawerContent
-            className={`bento-theme-${state.theme} glass-panel border-0 bg-background/80 text-foreground`}
-          >
-            <DrawerHeader className="text-left">
-              <DrawerTitle>Add to Bento</DrawerTitle>
-              <DrawerDescription>Drop in a link, a social, or a widget.</DrawerDescription>
-            </DrawerHeader>
-            <div className="max-h-[70vh] overflow-y-auto px-4 pb-8">{panel}</div>
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogContent
-            className={`bento-theme-${state.theme} glass-panel max-h-[85vh] overflow-y-auto rounded-3xl bg-background/70 text-foreground sm:max-w-md`}
-          >
-            <DialogHeader>
-              <DialogTitle>Add to Bento</DialogTitle>
-              <DialogDescription>Drop in a link, a social, or a widget.</DialogDescription>
-            </DialogHeader>
-            {panel}
-          </DialogContent>
-        </Dialog>
-      )}
     </>
   );
 }
